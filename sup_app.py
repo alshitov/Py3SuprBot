@@ -1,8 +1,6 @@
 import os
 import sys
 from PyQt4 import QtGui, QtCore
-import PIL
-from PIL import Image
 
 
 class SupremeApp(QtGui.QWidget):
