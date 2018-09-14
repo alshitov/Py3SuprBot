@@ -1,7 +1,8 @@
 import os
 import sys
 from PyQt4 import QtGui, QtCore
-import time
+import PIL
+from PIL import Image
 
 
 class SupremeApp(QtGui.QWidget):
@@ -28,13 +29,6 @@ class SupremeApp(QtGui.QWidget):
         self.bot_help_btn.setFixedSize(200, 30)
         self.start_btn.setFixedSize(200, 30)
 
-        # image = QtGui.QLabel(self)
-        # image.setGeometry(50, 40, 250, 250)
-        # pixmap = QtGui.QPixmap("supr.png")
-        # image.setPixmap(pixmap)
-        # image.show()
-
-
         #           set stylesheet          #
         # self.setStyleSheet("""
         #     QWidget {
@@ -56,17 +50,17 @@ class SupremeApp(QtGui.QWidget):
         self.show()
         self.create_table()
 
+
     def create_table(self):
         images_path = self.scriptDir + '/TempPNGS'
         images = os.listdir(images_path)
 
         for idx, img in enumerate(images):
             cell = QtGui.QLabel(self)
-            cell.setGeometry(10*idx, 10*idx, 250, 250)
-            pixmap = QtGui.QPixmap('TempPNGS/' + str(idx) + '.png')
+            cell.setGeometry(10 + (idx-1)*210, 5, 210, 210)
+            pixmap = QtGui.QPixmap('TempPNGS/' + 'new' + str(0) + str(idx) + '.png')
             cell.setPixmap(pixmap)
             cell.show()
-
 
 
 def mainApp():
