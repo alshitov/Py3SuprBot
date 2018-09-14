@@ -1,6 +1,7 @@
 import os
 import sys
 from PyQt4 import QtGui, QtCore
+import time
 
 
 class SupremeApp(QtGui.QWidget):
@@ -27,6 +28,13 @@ class SupremeApp(QtGui.QWidget):
         self.bot_help_btn.setFixedSize(200, 30)
         self.start_btn.setFixedSize(200, 30)
 
+        # image = QtGui.QLabel(self)
+        # image.setGeometry(50, 40, 250, 250)
+        # pixmap = QtGui.QPixmap("supr.png")
+        # image.setPixmap(pixmap)
+        # image.show()
+
+
         #           set stylesheet          #
         # self.setStyleSheet("""
         #     QWidget {
@@ -39,28 +47,32 @@ class SupremeApp(QtGui.QWidget):
         #     }
         # """)
 
-        # example for painting image
-
-        # image = QtGui.QLabel(self)
-        # image.setGeometry(50, 40, 250, 250)
-        # pixmap = QtGui.QPixmap("supr.png")
-        # image.setPixmap(pixmap)
-        # image.show()
-
         #           main window           #
         self.setGeometry(2500, 200, 1024, 576) # 169
         self.setFixedSize(1024, 576)
         self.setWindowTitle('PySupBot')
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'supr.png'))
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+        self.setWindowIcon(QtGui.QIcon(self.scriptDir + os.path.sep + 'supr.png'))
         self.show()
+        self.create_table()
+
+    def create_table(self):
+        images_path = self.scriptDir + '/TempPNGS'
+        images = os.listdir(images_path)
+
+        for idx, img in enumerate(images):
+            cell = QtGui.QLabel(self)
+            cell.setGeometry(10*idx, 10*idx, 250, 250)
+            pixmap = QtGui.QPixmap('TempPNGS/' + str(idx) + '.png')
+            cell.setPixmap(pixmap)
+            cell.show()
+
 
 
 def mainApp():
     app = QtGui.QApplication(sys.argv)
     GUI = SupremeApp()
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     mainApp()
