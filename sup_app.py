@@ -39,13 +39,22 @@ class SupremeApp(QWidget):
         vertbox.addLayout(horizbox)
 
         #           main window           #
-        self.setGeometry(2500, 100, 1086, 875)
+        self.setGeometry(2500, 100, 1186, 875)
         self.setLayout(vertbox)
-        self.setFixedWidth(1086)
+        self.setFixedWidth(1186)
         self.setWindowTitle('PySupBot')
 
         self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'supr.png'))
         self.show()
+
+        self.setStyleSheet("""
+
+            QPushButton:hover {
+                background-color: red;
+                color: white;
+                outline: none
+            }
+        """)
 
 
     def create_table(self):
@@ -53,12 +62,11 @@ class SupremeApp(QWidget):
         for i in range(6):
             for j in range(5):
                 img_name = str(i) + str(j) + '.png'
-                print(img_name)
                 if img_name in os.listdir(images_path):
-                    cell = QLabel(self)
-                    pixmap = QPixmap('TempPNGS/' + img_name)
-                    cell.setPixmap(pixmap)
-                    self.field_layout.addWidget(cell, i, j)
+                    btn = QPushButton()
+                    btn.setIcon(QIcon('TempPNGS/' + img_name))
+                    btn.setIconSize(QSize(200, 200))
+                    self.field_layout.addWidget(btn, i, j)
 
 
 def mainApp():
