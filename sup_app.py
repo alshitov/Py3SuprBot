@@ -56,6 +56,9 @@ class SupremeApp(QWidget):
             }
         """)
 
+    def createItemModalWindow(self, args):
+        win = NewItemModalWindow(args)
+
 
     def create_table(self):
         images_path = self.scriptDir + '/TempPNGS'
@@ -67,6 +70,58 @@ class SupremeApp(QWidget):
                     btn.setIcon(QIcon('TempPNGS/' + img_name))
                     btn.setIconSize(QSize(200, 200))
                     self.field_layout.addWidget(btn, i, j)
+                    argsz = [img_name]
+                    self.connect(btn, SIGNAL('clicked()'), lambda: self.createItemModalWindow(argsz))
+
+
+
+class NewItemModalWindow(QDialog):
+    def __init__(self, args):
+        super().__init__()
+        print(args)
+        self.dialog_window = QDialog(self)
+
+        self.horizbox = QHBoxLayout()
+
+        self.item_image = QLabel()
+        self.vertbox = QVBoxLayout()
+
+        self.description = QLabel() # text --> args[2] --> parse from site
+        self.color_combo = QComboBox() # options --> args[1] --> parse from site
+        self.size_combo = QComboBox()
+        self.add_to_cart = QPushButton()
+
+        #            temp options            #
+        color_combo_opts = ['Red',
+                            'White',
+                            'Olive',
+                            'Navy',
+                            'Black',
+                            'Purple']
+
+        size_combo_opts = ['Small',
+                           'Medium',
+                           'Lagre',
+                           'XLarge']
+        self.size_combo.addItems(size_combo_opts)
+        self.color_combo.addItems(color_combo_opts)
+
+        self.add_to_cart.setText("Add to Cart")
+
+        self.horizbox.addWidget(self.item_image)
+        self.horizbox.addLayout(self.vertbox)
+
+        self.vertbox.addWidget(self.description)
+        self.vertbox.addWidget(self.color_combo)
+        self.vertbox.addWidget(self.size_combo)
+        self.vertbox.addWidget(self.add_to_cart)
+
+        self.dialog_window.setLayout(self.horizbox)
+
+        self.dialog_window.setFixedSize(700, 400)
+        self.dialog_window.setWindowTitle("Name of item") # args[0] --> name
+        self.dialog_window.setModal(True)
+        self.dialog_window.exec_()
 
 
 def mainApp():
