@@ -7,6 +7,7 @@ from PyQt4.QtCore import *
 class SupremeApp(QWidget):
 
     def __init__(self):
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         super(SupremeApp, self).__init__()
         horizbox = QHBoxLayout()
         vertbox = QVBoxLayout()
@@ -27,15 +28,7 @@ class SupremeApp(QWidget):
         #            items field            #
         self.field_layout = QGridLayout()
 
-        #            test adding items to table    #
-        cell_1 = QLabel(self)
-        pixmap = QPixmap('TempPNGS/' + 'new01.png')
-        cell_1.setPixmap(pixmap)
-        self.field_layout.addWidget(cell_1, 0, 0)
-        cell_2 = QLabel(self)
-        pixmap = QPixmap('TempPNGS/' + 'new02.png')
-        cell_2.setPixmap(pixmap)
-        self.field_layout.addWidget(cell_2, 0, 1)
+        self.create_table()
 
         area = QWidget()
         area.setLayout(self.field_layout)
@@ -46,27 +39,26 @@ class SupremeApp(QWidget):
         vertbox.addLayout(horizbox)
 
         #           main window           #
-        self.setGeometry(2500, 100, 1040, 875)
+        self.setGeometry(2500, 100, 1086, 875)
         self.setLayout(vertbox)
-        self.setFixedWidth(1040)
+        self.setFixedWidth(1086)
         self.setWindowTitle('PySupBot')
-        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+
         self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'supr.png'))
         self.show()
-        # self.create_table()
 
-    #        edit method!          #
+
     def create_table(self):
         images_path = self.scriptDir + '/TempPNGS'
-        images = os.listdir(images_path)
-
-        for idx, img in enumerate(images):
-            cell = QLabel(self)
-            cell.setGeometry(10 + (idx - 1) * 210, 5, 210, 210)
-            pixmap = QPixmap('TempPNGS/' + 'new' + str(0) + str(idx) + '.png')
-            cell.setPixmap(pixmap)
-            self.field_layout.addWidget(cell, idx, idx)
-
+        for i in range(6):
+            for j in range(5):
+                img_name = str(i) + str(j) + '.png'
+                print(img_name)
+                if img_name in os.listdir(images_path):
+                    cell = QLabel(self)
+                    pixmap = QPixmap('TempPNGS/' + img_name)
+                    cell.setPixmap(pixmap)
+                    self.field_layout.addWidget(cell, i, j)
 
 
 def mainApp():
