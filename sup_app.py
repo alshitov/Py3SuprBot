@@ -14,6 +14,8 @@ class SupremeApp(QWidget):
 
         #             buttons               #
         self.init_user_btn = QPushButton('Initialize User', self)
+        self.connect(self.init_user_btn, SIGNAL('clicked()'),
+                     lambda: self.createUserInfoModalWindow())
         self.cart_btn = QPushButton('Cart', self)
         self.sizing_btn = QPushButton('Sizing', self)
         self.bot_help_btn = QPushButton('Bot Help', self)
@@ -56,7 +58,11 @@ class SupremeApp(QWidget):
         """)
 
     def createItemModalWindow(self, args):
-        win = NewItemModalWindow(args)
+        window_modal = ItemModalWindow(args)
+
+
+    def createUserInfoModalWindow(self):
+        window_modal = UserInfoModalWindow()
 
 
     def create_table(self):
@@ -83,7 +89,7 @@ class SupremeApp(QWidget):
                                  lambda: self.createItemModalWindow(argsz))
 
 
-class NewItemModalWindow(QDialog):
+class ItemModalWindow(QDialog):
     def __init__(self, args):
         super().__init__()
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
@@ -125,6 +131,55 @@ class NewItemModalWindow(QDialog):
 
         self.dialog_window.setFixedSize(850, 550)
         self.dialog_window.setWindowTitle(args[0])
+        self.dialog_window.setModal(True)
+        self.dialog_window.exec_()
+
+
+class UserInfoModalWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+        self.dialog_window = QDialog(self)
+        self.grid = QGridLayout()
+
+        #         user input fields       #
+        self.name_input = QTextEdit()
+        self.email_input = QTextEdit()
+        self.telephone_input = QTextEdit()
+        self.address_input = QTextEdit()
+        self.address2_input = QTextEdit()
+        self.address3_input = QTextEdit()
+        self.city_input = QTextEdit()
+        self.postcode_input = QTextEdit()
+        self.country_combo = QComboBox()
+        self.card_type_combo = QComboBox()
+        self.card_number_input = QTextEdit()
+        self.card_month_combo = QComboBox()
+        self.card_year_combo = QComboBox()
+        self.card_cvv_input = QTextEdit()
+        self.cancel_button = QPushButton()
+        self.save_button = QPushButton()
+
+        self.grid.addWidget(self.name_input,        0, 0, 1, 2)
+        self.grid.addWidget(self.email_input,       1, 0, 1, 2)
+        self.grid.addWidget(self.telephone_input,   2, 0, 1, 2)
+        self.grid.addWidget(self.address_input,     3, 0, 1, 1)
+        self.grid.addWidget(self.address2_input,    3, 1, 1, 1)
+        self.grid.addWidget(self.address3_input,    4, 0, 1, 2)
+        self.grid.addWidget(self.city_input,        5, 0, 1, 2)
+        self.grid.addWidget(self.postcode_input,    6, 0, 1, 1)
+        self.grid.addWidget(self.country_combo,     6, 1, 1, 1)
+        self.grid.addWidget(self.card_type_combo,   0, 2, 1, 3)
+        self.grid.addWidget(self.card_number_input, 1, 2, 1, 3)
+        self.grid.addWidget(self.card_month_combo,  2, 2, 1, 1)
+        self.grid.addWidget(self.card_year_combo,   2, 3, 1, 1)
+        self.grid.addWidget(self.card_cvv_input,    2, 4, 1, 1)
+        self.grid.addWidget(self.cancel_button,     6, 2, 1, 1)
+        self.grid.addWidget(self.save_button,       6, 3, 1, 2)
+
+        self.dialog_window.setLayout(self.grid)
+        self.dialog_window.setFixedSize(656, 369)
+        self.dialog_window.setWindowTitle("User billing information")
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
 
