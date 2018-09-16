@@ -48,7 +48,6 @@ class SupremeApp(QWidget):
         self.show()
 
         self.setStyleSheet("""
-
             QPushButton:hover {
                 background-color: red;
                 color: white;
@@ -70,43 +69,49 @@ class SupremeApp(QWidget):
                     btn.setIcon(QIcon('TempPNGS/' + img_name))
                     btn.setIconSize(QSize(200, 200))
                     self.field_layout.addWidget(btn, i, j)
-                    argsz = [img_name]
-                    self.connect(btn, SIGNAL('clicked()'), lambda: self.createItemModalWindow(argsz))
-
+                    # temp #
+                    item_name = 'Supreme®/Comme des Garçons SHIRT® Split Box Logo Tee'
+                    colorways = ['White', 'Black', 'Red']
+                    descr = 'Description: All cotton crewneck with vertical seam at front and diagonal seam at lower back.'\
+                            '\nPrinted logos on front and on back.'\
+                            '\nMade exclusively for Supreme.'\
+                            '\n\nPrice: 54doll, 48pounds, 54eur, 9720y'
+                    image_num = str(i) + str(j)
+                    argsz = [item_name, colorways, descr, image_num]
+                    self.connect(btn,
+                                 SIGNAL('clicked()'),
+                                 lambda: self.createItemModalWindow(argsz))
 
 
 class NewItemModalWindow(QDialog):
     def __init__(self, args):
         super().__init__()
-        print(args)
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.dialog_window = QDialog(self)
-
         self.horizbox = QHBoxLayout()
 
         self.item_image = QLabel()
+        pixmap = QPixmap(self.scriptDir + '/NewJPGS/' + args[3] + '.jpg')
+        self.item_image.setPixmap(pixmap)
         self.vertbox = QVBoxLayout()
 
-        self.description = QLabel() # text --> args[2] --> parse from site
-        self.color_combo = QComboBox() # options --> args[1] --> parse from site
+        self.description = QLabel()
+        self.description.setWordWrap(True)
+        self.description.setFixedSize(300, 360)
+        self.description.setText(args[2])
+        self.color_combo = QComboBox()
         self.size_combo = QComboBox()
         self.add_to_cart = QPushButton()
+        self.add_to_cart.setText("Add to Cart")
 
         #            temp options            #
-        color_combo_opts = ['Red',
-                            'White',
-                            'Olive',
-                            'Navy',
-                            'Black',
-                            'Purple']
-
+        color_combo_opts = args[1]
         size_combo_opts = ['Small',
                            'Medium',
                            'Lagre',
                            'XLarge']
         self.size_combo.addItems(size_combo_opts)
         self.color_combo.addItems(color_combo_opts)
-
-        self.add_to_cart.setText("Add to Cart")
 
         self.horizbox.addWidget(self.item_image)
         self.horizbox.addLayout(self.vertbox)
@@ -118,8 +123,8 @@ class NewItemModalWindow(QDialog):
 
         self.dialog_window.setLayout(self.horizbox)
 
-        self.dialog_window.setFixedSize(700, 400)
-        self.dialog_window.setWindowTitle("Name of item") # args[0] --> name
+        self.dialog_window.setFixedSize(850, 550)
+        self.dialog_window.setWindowTitle(args[0])
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
 
