@@ -143,23 +143,24 @@ class UserInfoModalWindow(QDialog):
         self.grid = QGridLayout()
 
         #         user input fields       #
-        self.name_input = QTextEdit()
-        self.email_input = QTextEdit()
-        self.telephone_input = QTextEdit()
-        self.address_input = QTextEdit()
-        self.address2_input = QTextEdit()
-        self.address3_input = QTextEdit()
-        self.city_input = QTextEdit()
-        self.postcode_input = QTextEdit()
+        self.name_input = QLineEdit()
+        self.email_input = QLineEdit()
+        self.telephone_input = QLineEdit()
+        self.address_input = QLineEdit()
+        self.address2_input = QLineEdit()
+        self.address3_input = QLineEdit()
+        self.city_input = QLineEdit()
+        self.postcode_input = QLineEdit()
         self.country_combo = QComboBox()
         self.card_type_combo = QComboBox()
-        self.card_number_input = QTextEdit()
+        self.card_number_input = QLineEdit()
         self.card_month_combo = QComboBox()
         self.card_year_combo = QComboBox()
-        self.card_cvv_input = QTextEdit()
+        self.card_cvv_input = QLineEdit()
         self.cancel_button = QPushButton()
         self.save_button = QPushButton()
 
+        #         placing elements in grid       #
         self.grid.addWidget(self.name_input,        0, 0, 1, 2)
         self.grid.addWidget(self.email_input,       1, 0, 1, 2)
         self.grid.addWidget(self.telephone_input,   2, 0, 1, 2)
@@ -176,6 +177,29 @@ class UserInfoModalWindow(QDialog):
         self.grid.addWidget(self.card_cvv_input,    2, 4, 1, 1)
         self.grid.addWidget(self.cancel_button,     6, 2, 1, 1)
         self.grid.addWidget(self.save_button,       6, 3, 1, 2)
+
+        #        setting parameters for user inputs      #
+        self.name_input.setPlaceholderText("Full name")
+        self.email_input.setPlaceholderText("E-mail")
+        self.telephone_input.setPlaceholderText("Telephone number")
+        self.address_input.setPlaceholderText("Address")
+        self.address2_input.setPlaceholderText("Address 2")
+        self.address3_input.setPlaceholderText("Address 3")
+        self.city_input.setPlaceholderText("City")
+        self.postcode_input.setPlaceholderText("Postcode")
+        self.card_number_input.setPlaceholderText("Card number")
+        self.card_cvv_input.setPlaceholderText("CVV")
+
+        self.country_combo.addItems(['GB', 'NB', 'AT', 'BY', 'BE', 'BG', 'HR', 'CZ', 'DK', 'EE', 'FI',
+                                     'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LT', 'LU', 'MC',
+                                     'NL', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SI', 'ES', 'SE', 'CH', 'TR'])
+        self.card_type_combo.addItems(['Visa', 'American Express', 'Mastercard', 'Solo', 'PayPal'])
+        self.card_month_combo.addItems(['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13'])
+        self.card_year_combo.addItems(['2018', '2019', '2020', '2021', '2022', '2023',
+                                       '2024', '2025', '2026', '2027', '2028'])
+
+        self.cancel_button.setText('Cancel')
+        self.save_button.setText('Accept And Save')
 
         self.dialog_window.setLayout(self.grid)
         self.dialog_window.setFixedSize(656, 369)
