@@ -47,6 +47,7 @@ class SupremeApp(QWidget):
         self.setWindowTitle('PySupBot')
 
         self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'supr.png'))
+        self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.show()
 
         self.setStyleSheet("""
@@ -91,7 +92,7 @@ class SupremeApp(QWidget):
 
 class ItemModalWindow(QDialog):
     def __init__(self, args):
-        super().__init__()
+        super(ItemModalWindow, self).__init__()
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.dialog_window = QDialog(self)
         self.horizbox = QHBoxLayout()
@@ -137,7 +138,7 @@ class ItemModalWindow(QDialog):
 
 class UserInfoModalWindow(QDialog):
     def __init__(self):
-        super().__init__()
+        super(UserInfoModalWindow, self).__init__()
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.dialog_window = QDialog(self)
         self.grid = QGridLayout()
@@ -159,6 +160,9 @@ class UserInfoModalWindow(QDialog):
         self.card_cvv_input = QLineEdit()
         self.cancel_button = QPushButton()
         self.save_button = QPushButton()
+
+        #         creating accept/decline dialog     #
+        self.connect(self.cancel_button, SIGNAL('clicked()'), lambda: self.canceled())
 
         #         placing elements in grid       #
         self.grid.addWidget(self.name_input,        0, 0, 1, 2)
@@ -206,6 +210,45 @@ class UserInfoModalWindow(QDialog):
         self.dialog_window.setWindowTitle("User billing information")
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
+
+    def canceled(self):
+        window_modal = AcceptDialogWindow()
+
+    def Quit(self):
+        self.dialog_window.close()
+
+
+class AcceptDialogWindow(UserInfoModalWindow):
+    def __init__(self):
+        super(UserInfoModalWindow, self).__init__()
+        self.accept_dialog = QDialog()
+        self.grid = QGridLayout()
+        self.warning_text = QLabel()
+        self.accept_button = QPushButton()
+        self.cancel_button = QPushButton()
+
+        self.grid.addWidget(self.warning_text, 0, 0, 1, 2)
+        self.grid.addWidget(self.accept_button, 1, 1, 1, 1)
+        self.grid.addWidget(self.cancel_button, 1, 0, 1, 1)
+
+        self.warning_text.setText('Are you sure? \nInformation will be lost.')
+        self.warning_text.setAlignment(Qt.AlignCenter)
+        self.accept_button.setText('Accept')
+        self.cancel_button.setText('Cancel')
+
+        self.accept_dialog.setLayout(self.grid)
+        self.accept_dialog.setFixedSize(250, 150)
+        self.accept_dialog.setWindowTitle('Accept action')
+        self.accept_dialog.setModal(True)
+
+        self.connect(self.accept_button, SIGNAL('clicked()'), lambda: self.exit_user_input_window())
+        self.connect(self.cancel_button, SIGNAL('clicked()'), self.accept_dialog.close)
+        self.accept_dialog.exec_()
+
+
+    def exit_user_input_window(self):
+        self.accept_dialog.close()
+        #  + close self.dialog_window from UserInfoModalWindow
 
 
 def mainApp():
