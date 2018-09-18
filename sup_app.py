@@ -2,6 +2,7 @@ import os
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import json
 
 
 class SupremeApp(QWidget):
@@ -243,7 +244,6 @@ class UserInfoModalWindow(QDialog):
 
 
     def save_user_info(self):
-        print("Here to save info")
         user = {}
         user['name'] = str(self.name_input.text())
         user['email'] = str(self.email_input.text())
@@ -260,9 +260,11 @@ class UserInfoModalWindow(QDialog):
         user['card_year'] = str(self.card_year_combo.currentText())
         user['card_cvv'] = str(self.card_cvv_input.text())
 
-        dump_name = '_'.join(user['name'].split(' '))
-        print(user)
-        print(dump_name)
+        dump_name = '_'.join(user['name'].split(' ')) + '.json'
+        with open(dump_name, mode='w', encoding='utf-8') as f:
+            json.dump(user, f)
+
+        self.dialog_window.close()
 
 
     def canceled(self):
