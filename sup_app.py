@@ -143,7 +143,7 @@ class UserInfoModalWindow(QDialog):
         self.dialog_window = QDialog(self)
         self.grid = QGridLayout()
 
-        #         user input fields       #
+        #           user input fields            #
         self.name_input = QLineEdit()
         self.email_input = QLineEdit()
         self.telephone_input = QLineEdit()
@@ -161,10 +161,7 @@ class UserInfoModalWindow(QDialog):
         self.cancel_button = QPushButton()
         self.save_button = QPushButton()
 
-        #         creating accept/decline dialog     #
-        self.connect(self.cancel_button, SIGNAL('clicked()'), lambda: self.canceled())
-
-        #         placing elements in grid       #
+        #         placing elements in a grid       #
         self.grid.addWidget(self.name_input,        0, 0, 1, 2)
         self.grid.addWidget(self.email_input,       1, 0, 1, 2)
         self.grid.addWidget(self.telephone_input,   2, 0, 1, 2)
@@ -205,17 +202,75 @@ class UserInfoModalWindow(QDialog):
         self.cancel_button.setText('Cancel')
         self.save_button.setText('Accept And Save')
 
+        #           setting validators           #
+        self.onlyInt = QIntValidator()
+        self.onlyLong = QDoubleValidator()
+
+        name_re = QRegExp("[a-zA-Z ]+")
+        name_input_validator = QRegExpValidator(name_re, self.name_input)
+        self.name_input.setValidator(name_input_validator)
+
+        self.telephone_input.setValidator(self.onlyLong)
+
+        city_re = QRegExp("[a-zA-Z, ]+")
+        city_input_validator = QRegExpValidator(city_re, self.city_input)
+        self.city_input.setValidator(city_input_validator)
+
+        self.postcode_input.setValidator(self.onlyInt)
+
+        card_number_re = QRegExp("[0-9]{,16}")
+        card_number_validator = QRegExpValidator(card_number_re, self.card_cvv_input)
+        self.card_number_input.setValidator(card_number_validator)
+
+        card_cvv_re = QRegExp("[0-9]{,3}")
+        card_cvv_validator = QRegExpValidator(card_cvv_re, self.card_cvv_input)
+        self.card_cvv_input.setValidator(card_cvv_validator)
+
+        #            connecting slots           #
+        self.connect(self.cancel_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.canceled())
+
+        self.connect(self.save_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.save_user_info())
+
         self.dialog_window.setLayout(self.grid)
         self.dialog_window.setFixedSize(656, 369)
         self.dialog_window.setWindowTitle("User billing information")
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
 
-    def canceled(self):
-        window_modal = AcceptDialogWindow()
 
-    def Quit(self):
-        self.dialog_window.close()
+    def save_user_info(self):
+        print("Here to save info")
+        user = {}
+        user['name'] = str(self.name_input.text())
+        user['email'] = str(self.email_input.text())
+        user['tel'] = str(self.telephone_input.text())
+        user['address'] = str(self.address_input.text())
+        user['address2'] = str(self.address2_input.text())
+        user['address3'] = str(self.address3_input.text())
+        user['city'] = str(self.city_input.text())
+        user['postcode'] = str(self.postcode_input.text())
+        user['country'] = str(self.country_combo.currentText())
+        user['card_type'] = str(self.card_type_combo.currentText())
+        user['card_number'] = str(self.card_number_input.text())
+        user['card_month'] = str(self.card_month_combo.currentText())
+        user['card_year'] = str(self.card_year_combo.currentText())
+        user['card_cvv'] = str(self.card_cvv_input.text())
+
+        dump_name = '_'.join(user['name'].split(' '))
+        print(user)
+        print(dump_name)
+
+
+    def canceled(self):
+        accept_dialog = AcceptDialogWindow()
+
+
+    def quit(self):
+        print("Here to close window")
 
 
 class AcceptDialogWindow(UserInfoModalWindow):
@@ -241,14 +296,18 @@ class AcceptDialogWindow(UserInfoModalWindow):
         self.accept_dialog.setWindowTitle('Accept action')
         self.accept_dialog.setModal(True)
 
-        self.connect(self.accept_button, SIGNAL('clicked()'), lambda: self.exit_user_input_window())
-        self.connect(self.cancel_button, SIGNAL('clicked()'), self.accept_dialog.close)
+        self.connect(self.accept_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.close_windows())
+        self.connect(self.cancel_button,
+                     SIGNAL('clicked()'),
+                     self.accept_dialog.close)
         self.accept_dialog.exec_()
 
 
-    def exit_user_input_window(self):
+    def close_windows(self):
         self.accept_dialog.close()
-        #  + close self.dialog_window from UserInfoModalWindow
+        return super(AcceptDialogWindow, self).quit()
 
 
 def mainApp():
