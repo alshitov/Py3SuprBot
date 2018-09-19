@@ -1,6 +1,7 @@
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import sizing_parser
 
 
 class SizingHelpModalWindow(QDialog):
@@ -43,10 +44,15 @@ class SizingHelpModalWindow(QDialog):
         pixmap = QPixmap('logo.png')
         self.logo_label.setPixmap(pixmap)
         self.current_season_label.setText('Fall/Winter 2018 Sizing')
-        # for table - parse items info from https://www.supremenewyork.com/shop/sizing
+        self.get_contents()
 
         self.dialog_window.setLayout(self.layout)
         self.dialog_window.setFixedSize(700, 450)
         self.dialog_window.setWindowTitle("Supreme Sizing")
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
+
+
+    def get_contents(self):
+        contents = sizing_parser.parse_table()
+        print(contents)

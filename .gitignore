@@ -1,0 +1,8 @@
+# cache
+*.pyc
+
+# pycharm
+*.idea
+
+# databases
+*.json
