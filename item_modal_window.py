@@ -4,24 +4,21 @@ from PyQt4.QtGui import *
 
 class ItemModalWindow(QDialog):
     def __init__(self, args):
-        super(ItemModalWindow, self).__init__()
+        super().__init__()
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.dialog_window = QDialog(self)
         self.dialog_window.setStyleSheet('font-family: Courier;')
         self.horizbox = QHBoxLayout()
+        self.vertbox = QVBoxLayout()
 
         self.item_image = QLabel()
         pixmap = QPixmap(self.scriptDir + '/NewJPGS/' + args[3] + '.jpg')
         self.item_image.setPixmap(pixmap)
-        self.vertbox = QVBoxLayout()
 
         self.description = QLabel()
         self.description.setWordWrap(True)
         self.description.setFixedSize(300, 360)
         self.description.setText(args[2])
-        # font = QFont()
-        # font.setFamily('Courier')
-        # self.description.setFont(font)
         self.color_combo = QComboBox()
         self.size_combo = QComboBox()
         self.add_to_cart = QPushButton()

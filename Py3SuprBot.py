@@ -1,11 +1,11 @@
 import sys
 from PyQt4.QtGui import *
-from supreme_app import *
+import supreme_app
 
 
 def mainApp():
     app = QApplication(sys.argv)
-    GUI = SupremeApp()
+    GUI = supreme_app.SupremeApp()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':

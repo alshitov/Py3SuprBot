@@ -5,9 +5,8 @@ import json
 
 
 class UserInfoModalWindow(QDialog):
-    def __init__(self, parent=None):
-        QDialog.__init__(self, parent)
-        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+    def __init__(self):
+        super().__init__()
         self.dialog_window = QDialog(self)
         self.dialog_window.setStyleSheet('font-family: Courier;')
         self.grid = QGridLayout()
@@ -130,7 +129,7 @@ class UserInfoModalWindow(QDialog):
         self.accept_dialog.setLayout(self.grid)
         self.accept_dialog.setFixedSize(250, 150)
         self.accept_dialog.setWindowTitle('Accept action')
-        # self.accept_dialog.setModal(True)
+        self.accept_dialog.setModal(True)
 
         self.connect(self.accept_button,
                      SIGNAL('clicked()'),

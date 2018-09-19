@@ -1,8 +1,9 @@
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from user_input_modal_window import *
-from item_modal_window import *
+import user_input_modal_window
+import item_modal_window
+import sizing_window
 
 
 class SupremeApp(QWidget):
@@ -14,11 +15,20 @@ class SupremeApp(QWidget):
 
         #             buttons               #
         self.init_user_btn = QPushButton('Initialize User', self)
-        self.connect(self.init_user_btn, SIGNAL('clicked()'),
+        self.connect(self.init_user_btn,
+                     SIGNAL('clicked()'),
                      lambda: self.createUserInfoModalWindow())
+
         self.cart_btn = QPushButton('Cart', self)
+
         self.sizing_btn = QPushButton('Sizing', self)
+
+        self.connect(self.sizing_btn,
+                     SIGNAL('clicked()'),
+                     lambda: self.create_sizing_help_window())
+
         self.bot_help_btn = QPushButton('Bot Help', self)
+
         self.start_btn = QPushButton('Start Bot', self)
 
         horizbox.addWidget(self.init_user_btn)
@@ -46,17 +56,21 @@ class SupremeApp(QWidget):
         self.setFixedWidth(1186)
         self.setWindowTitle('PySupBot')
 
-        self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'supr.png'))
+        self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'logo.png'))
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.show()
 
 
     def createItemModalWindow(self, args):
-        window_modal = ItemModalWindow(args)
+        window_modal = item_modal_window.ItemModalWindow(args)
 
 
     def createUserInfoModalWindow(self):
-        window_modal = UserInfoModalWindow()
+        window_modal = user_input_modal_window.UserInfoModalWindow()
+
+
+    def create_sizing_help_window(self):
+        window_modal = sizing_window.SizingHelpModalWindow()
 
 
     def create_table(self):
