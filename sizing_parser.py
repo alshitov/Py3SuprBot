@@ -12,35 +12,29 @@ def parse_table():
     html = get_html(url)
     soup = BeautifulSoup(html, 'html.parser')
 
-    title_ths = soup.find_all('th')
-    titles = [t_th.text for t_th in title_ths]
-    idx = 0
-    separate_item_titles = []
-    while idx != len(titles):
-        separate_item_titles.append(titles[idx:idx + 5])
-        idx += 5
-
-    measure_tds = soup.find_all('td')
-    measures = [m_td.text for m_td in measure_tds]
-    idx = 0
-    separate_item_measures = []
-    while idx != len(measures):
-        separate_item_measures.append(measures[idx:idx + 5])
-        idx += 5
-
-    #       forming objects     #
     objects = []
-    i = 0
-    for index in range(len(separate_item_titles)):
-        object_ = {}
-        object_['name'] = separate_item_titles[index]
-        object_['sizes'] = []
-        object_['sizes'].append(separate_item_measures[i:i+3])
-        i += 3
-        objects.append(object_)
+    tables = soup.find_all('table')
 
-    # for object in objects:
-    #     print(object, '\n\n')
+    for table in tables:
+
+        table_head = table.find('thead')
+        headers = table_head.find_all('th')
+        titles = [header.text for header in headers]
+
+        table_body = table.find('tbody')
+        rows = table_body.find_all('tr')
+        data = []
+        for row in rows:
+            cols = row.find_all('td')
+            cols = [cell.text.strip() for cell in cols]
+            data.append([cell for cell in cols if cell])
+
+        object_ = {
+            'headers': titles,
+            'data': data
+        }
+
+        objects.append(object_)
     return objects
 
 

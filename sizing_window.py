@@ -51,22 +51,25 @@ class SizingHelpModalWindow(QDialog):
 
     def create_tables(self):
         #    getting contents for tables    #
-        self.table_contents = sizing_parser.parse_table()
+        self.objects = sizing_parser.parse_table()
 
         #      creating separate table      #
-        for index, item in enumerate(self.table_contents):
+        for object_ in self.objects:
             self.sizing_table = QTableWidget()
-
             self.sizing_table.setFixedSize(665, 150)
-            self.sizing_table.horizontalHeader().setResizeMode(0, QHeaderView.Stretch)
             self.tables_layout.addWidget(self.sizing_table)
 
             self.sizing_table.setColumnCount(5)
-            self.sizing_table.setRowCount(4)
+            self.sizing_table.setRowCount(len(object_['data']))
             self.sizing_table.verticalHeader().hide()
 
-            headers = self.table_contents[index]['name']
+            headers = object_['headers']
             self.sizing_table.setHorizontalHeaderLabels(headers)
+
+            for i in range(len(object_['data'])):
+                for j in range(len(object_['data'][i])):
+                    self.sizing_table.setItem(i, j, QTableWidgetItem(object_['data'][i][j]))
+
             self.sizing_table.setColumnWidth(0, 340)
             self.sizing_table.setColumnWidth(1, 80)
             self.sizing_table.setColumnWidth(2, 80)
