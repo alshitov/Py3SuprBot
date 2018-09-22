@@ -4,7 +4,12 @@ from PyQt4.QtCore import *
 import user_input_modal_window
 import item_modal_window
 import sizing_window
+from cart import Cart
+import json
+from parser import Parser # parse main window content
 
+
+#TODO: limit items per type when adding to backet
 
 class SupremeApp(QWidget):
     def __init__(self):
@@ -17,9 +22,12 @@ class SupremeApp(QWidget):
         self.init_user_btn = QPushButton('Initialize User', self)
         self.connect(self.init_user_btn,
                      SIGNAL('clicked()'),
-                     lambda: self.createUserInfoModalWindow())
+                     lambda: self.create_user_info_modal_window())
 
         self.cart_btn = QPushButton('Cart', self)
+        self.connect(self.cart_btn,
+                     SIGNAL('clicked()'),
+                     lambda: self.create_cart_window())
 
         self.sizing_btn = QPushButton('Sizing', self)
 
@@ -61,16 +69,27 @@ class SupremeApp(QWidget):
         self.show()
 
 
-    def createItemModalWindow(self, args):
+    def create_item_modal_window(self, args):
+        if os.path.isfile(self.scriptDir + "/items_to_buy.json"):
+            pass
+        else:
+            os.system("touch items_to_buy.json")
+            with open("items_to_buy.json", mode='r', encoding='utf-8') as f:
+                json.dump([], f)
+
         window_modal = item_modal_window.ItemModalWindow(args)
 
 
-    def createUserInfoModalWindow(self):
+    def create_user_info_modal_window(self):
         window_modal = user_input_modal_window.UserInfoModalWindow()
 
 
     def create_sizing_help_window(self):
         window_modal = sizing_window.SizingHelpModalWindow()
+
+
+    def create_cart_window(self):
+        window_modal = Cart()
 
 
     def create_table(self):
@@ -94,4 +113,4 @@ class SupremeApp(QWidget):
                     argsz = [item_name, colorways, descr, image_num]
                     self.connect(btn,
                                  SIGNAL('clicked()'),
-                                 lambda: self.createItemModalWindow(argsz))
+                                 lambda: self.create_item_modal_window(argsz))
