@@ -1,7 +1,7 @@
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sizing_parser
+from parser import Parser
 
 
 class SizingHelpModalWindow(QDialog):
@@ -51,7 +51,8 @@ class SizingHelpModalWindow(QDialog):
 
     def create_tables(self):
         #    getting contents for tables    #
-        self.objects = sizing_parser.parse_table()
+        self.parser = Parser()
+        self.objects = self.parser.parse_sizing_tables()
 
         #      creating separate table      #
         for object_ in self.objects:
