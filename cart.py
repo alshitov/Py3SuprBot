@@ -1,12 +1,13 @@
+import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-
 import json
 
 
 class Cart(QDialog):
     def __init__(self):
         super().__init__()
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.cart_window = QDialog()
         self.layout = QVBoxLayout()
 
@@ -45,19 +46,31 @@ class Cart(QDialog):
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items = json.load(fout)
 
-        self.items_list = QTableWidget()
-        self.items_list.setFixedSize(665, 150)
-        self.items_list_layout.addWidget(self.items_list)
+        for item in items:
+            item_box = QWidget()
+            item_layout = QHBoxLayout()
 
-        self.items_list.setColumnCount(5)
-        self.items_list.setRowCount(len(items[0]))
+            item_image_label = QLabel()
+            item_details_label = QLabel()
+            item_remove_button = QPushButton()
+            item_price_label = QLabel()
 
-        for i in range(len(items)):
-            for index, key in enumerate(items[i]):
-                self.items_list.setItem(i, index, QTableWidgetItem(items[i][key]))
+            item_layout.addWidget(item_image_label)
+            item_layout.addWidget(item_details_label)
+            item_layout.addWidget(item_remove_button)
+            item_layout.addWidget(item_price_label)
 
-        self.items_list.setFixedSize(665, 150)
-        self.items_list_layout.addWidget(self.items_list)
+            pixmap = QPixmap(self.scriptDir + '/TempPNGS/' + item['image'] + '.png')
+            item_image_label.setPixmap(pixmap)
+            item_details_label.setText(item['name'] + '\n' +item['color'] + '\n' + item['size'])
+            item_remove_button.setText('Remove')
+            self.connect(item_remove_button,
+                         SIGNAL('clicked()'),
+                         lambda: self.remove_item(item))
+            item_price_label.setText(str(item['price']))
+
+            item_box.setLayout(item_layout)
+            self.items_list_layout.addWidget(item_box)
 
 
     def count_of_items(self):
@@ -70,3 +83,14 @@ class Cart(QDialog):
             return sum(int(item['price']) for item in json.load(fout))
 
 
+    def remove_item(self, item):
+        with open("items_to_buy.json", mode='w+', encoding='utf-8') as fout:
+            feeds = json.load(fout)
+            for feed in feeds:
+                print(feed)
+                if feed['name'] == item['name'] \
+                    and feed['size'] == item['size'] \
+                    and feed['color'] == item['color'] \
+                    and feed['price'] == item['price']:
+                    feeds.remove(feed)
+            json.dump(feeds, fout)

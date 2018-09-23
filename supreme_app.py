@@ -1,15 +1,18 @@
 import os
+import json
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import user_input_modal_window
-import item_modal_window
-import sizing_window
+
+from user_input_modal_window import UserInfoModalWindow
+from item_modal_window import ItemModalWindow
+from sizing_window import SizingHelpModalWindow
 from cart import Cart
-import json
+
 from parser import Parser # parse main window content
 
 
 #TODO: limit items per type when adding to backet
+#TODO: handle error ([]) when json dumping
 
 class SupremeApp(QWidget):
     def __init__(self):
@@ -77,15 +80,15 @@ class SupremeApp(QWidget):
             with open("items_to_buy.json", mode='r', encoding='utf-8') as f:
                 json.dump([], f)
 
-        window_modal = item_modal_window.ItemModalWindow(args)
+        window_modal = ItemModalWindow(args)
 
 
     def create_user_info_modal_window(self):
-        window_modal = user_input_modal_window.UserInfoModalWindow()
+        window_modal = UserInfoModalWindow()
 
 
     def create_sizing_help_window(self):
-        window_modal = sizing_window.SizingHelpModalWindow()
+        window_modal = SizingHelpModalWindow()
 
 
     def create_cart_window(self):

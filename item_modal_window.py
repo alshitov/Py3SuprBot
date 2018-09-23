@@ -58,12 +58,11 @@ class ItemModalWindow(QDialog):
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
 
-
     def add_to_cart(self):
         self.item_to_buy = {'name': self.item['name'],
                             'color': str(self.color_combo.currentText()),
                             'size': str(self.size_combo.currentText()),
-                            'image': self.scriptDir + '/NewJPGS/' + str(self.item['picture']) + '.jpg',
+                            'image': str(self.item['picture']),
                             'price': 220}
 
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
