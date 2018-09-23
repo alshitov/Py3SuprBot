@@ -68,10 +68,6 @@ class ItemModalWindow(QDialog):
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items = json.load(fout)
 
-        print("Before ->", items)
-
         with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
             items.append(self.item_to_buy)
             json.dump(items, fin, ensure_ascii=False)
-
-        print("After ->", items)

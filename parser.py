@@ -65,4 +65,7 @@ class Parser():
 
             self.objects.append(self.object_)
 
-        return self.objects
+        article = self.soup.find('article', class_='blurb')
+        current_title = article.find('h2').text
+
+        return [self.objects, current_title]

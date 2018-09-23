@@ -7,12 +7,11 @@ from user_input_modal_window import UserInfoModalWindow
 from item_modal_window import ItemModalWindow
 from sizing_window import SizingHelpModalWindow
 from cart import Cart
+from parser import Parser
 
-from parser import Parser # parse main window content
 
+#TODO: limit items per type when adding to basket
 
-#TODO: limit items per type when adding to backet
-#TODO: handle error ([]) when json dumping
 
 class SupremeApp(QWidget):
     def __init__(self):

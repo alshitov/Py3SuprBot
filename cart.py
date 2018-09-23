@@ -4,6 +4,9 @@ from PyQt4.QtCore import *
 import json
 
 
+#TODO: regroup table after deleting item
+
+
 class Cart(QDialog):
     def __init__(self):
         super().__init__()
@@ -14,8 +17,8 @@ class Cart(QDialog):
         self.count_label = QLabel()
         self.subtotal_label = QLabel()
 
-        self.count_label.setText('{} items in your basket.'.format(self.count_of_items()))
-        self.subtotal_label.setText('subtotal: €{}'.format(self.subtotal_count()))
+        self.count_of_items()
+        self.subtotal_count()
 
         self.items_list_layout = QVBoxLayout()
         self.items_list_layout.setContentsMargins(5, 5, 5, 5)
@@ -64,9 +67,11 @@ class Cart(QDialog):
             self.item_image_label.setPixmap(pixmap)
             self.item_details_label.setText(item['name'] + '\n' +item['color'] + '\n' + item['size'])
             self.item_remove_button.setText('Remove')
+
             self.connect(self.item_remove_button,
                          SIGNAL('clicked()'),
-                         lambda: self.remove_item(item, index=0)) #    temp
+                         lambda: self.remove_item(item, items.index(item)))
+
             self.item_price_label.setText(str(item['price']))
 
             self.item_box.setLayout(self.item_layout)
@@ -75,16 +80,16 @@ class Cart(QDialog):
 
     def count_of_items(self):
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
-            return len(json.load(fout))
+            self.count_label.setText('{} items in your basket.'.format(len(json.load(fout))))
 
 
     def subtotal_count(self):
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
-            return sum(int(item['price']) for item in json.load(fout))
+            self.subtotal_label.setText('subtotal: €{}'.format(sum(int(item['price']) for item in json.load(fout))))
 
 
     def remove_item(self, item, index):
-        self.items_list_layout.itemAt(index).widget().deleteLater()     # temp
+        self.items_list_layout.itemAt(index).widget().deleteLater()
 
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
             feeds = json.load(fout)
@@ -98,4 +103,7 @@ class Cart(QDialog):
 
         with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
             json.dump(feeds, fin, ensure_ascii=False)
+
+        self.count_of_items()
+        self.subtotal_count()
 

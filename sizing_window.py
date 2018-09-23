@@ -40,7 +40,6 @@ class SizingHelpModalWindow(QDialog):
         #          widget contents      #
         pixmap = QPixmap('logo.png')
         self.logo_label.setPixmap(pixmap)
-        self.current_season_label.setText('Fall/Winter 2018 Sizing')
 
         self.dialog_window.setLayout(self.layout)
         self.dialog_window.setFixedSize(720, 450)
@@ -52,7 +51,9 @@ class SizingHelpModalWindow(QDialog):
     def create_tables(self):
         #    getting contents for tables    #
         self.parser = Parser()
-        self.objects = self.parser.parse_sizing_tables()
+        self.objects = self.parser.parse_sizing_tables()[0]
+
+        self.current_season_label.setText(self.parser.parse_sizing_tables()[1])
 
         #      creating separate table      #
         for object_ in self.objects:
