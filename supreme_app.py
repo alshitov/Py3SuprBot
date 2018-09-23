@@ -107,10 +107,11 @@ class SupremeApp(QWidget):
                     colorways = ['White', 'Black', 'Red']
                     descr = 'Description: All cotton crewneck with vertical seam at front and diagonal seam at lower back.'\
                             '\nPrinted logos on front and on back.'\
-                            '\nMade exclusively for Supreme.'\
-                            '\n\nPrice: 54doll, 48pounds, 54eur, 9720y'
+                            '\nMade exclusively for Supreme.'
+                    price = '\n\nPrice: 54doll, 48pounds, 54eur, 9720y'
+
                     image_num = str(i) + str(j)
-                    argsz = [item_name, colorways, descr, image_num]
+                    argsz = [item_name, colorways, descr, image_num, price]
                     self.connect(btn,
                                  SIGNAL('clicked()'),
                                  lambda: self.create_item_modal_window(argsz))

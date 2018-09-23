@@ -16,7 +16,8 @@ class ItemModalWindow(QDialog):
         self.item = {'name': args[0],
                      'colorways': args[1],
                      'description': args[2],
-                     'picture': args[3]}
+                     'picture': args[3],
+                     'price': args[4]}
         #                image              #
         self.item_image = QLabel()
         pixmap = QPixmap(self.scriptDir + '/NewJPGS/' + str(self.item['picture']) + '.jpg')
@@ -26,7 +27,7 @@ class ItemModalWindow(QDialog):
         self.description = QLabel()
         self.description.setWordWrap(True)
         self.description.setFixedSize(300, 360)
-        self.description.setText(self.item['description'])
+        self.description.setText(self.item['description'] + self.item['price'])
 
         #             button                #
         self.add_to_cart_button = QPushButton()
@@ -62,7 +63,8 @@ class ItemModalWindow(QDialog):
         self.item_to_buy = {'name': self.item['name'],
                             'color': str(self.color_combo.currentText()),
                             'size': str(self.size_combo.currentText()),
-                            'image': self.scriptDir + '/NewJPGS/' + str(self.item['picture']) + '.jpg'}
+                            'image': self.scriptDir + '/NewJPGS/' + str(self.item['picture']) + '.jpg',
+                            'price': 220}
 
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items = json.load(fout)

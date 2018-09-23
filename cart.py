@@ -8,13 +8,18 @@ class Cart(QDialog):
     def __init__(self):
         super().__init__()
         self.cart_window = QDialog()
-        self.layout = QHBoxLayout()
+        self.layout = QVBoxLayout()
 
         self.count_label = QLabel()
         self.subtotal_label = QLabel()
 
+        self.count_label.setText('{} items in your basket.'.format(self.count_of_items()))
+        self.subtotal_label.setText('subtotal: €{}'.format(self.subtotal_count()))
+
         self.items_list_layout = QVBoxLayout()
         self.items_list_layout.setContentsMargins(5, 5, 5, 5)
+
+        self.build_table()
 
         self.area = QWidget()
         self.area.setLayout(self.items_list_layout)
@@ -29,8 +34,6 @@ class Cart(QDialog):
         self.count_label.setAlignment(Qt.AlignHCenter)
         self.subtotal_label.setAlignment(Qt.AlignHCenter)
 
-        self.build_table()
-
         self.cart_window.setLayout(self.layout)
         self.cart_window.setFixedSize(850, 550)
         self.cart_window.setWindowTitle("Cart")
@@ -42,17 +45,28 @@ class Cart(QDialog):
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items = json.load(fout)
 
-        print(items[0]['name'])
-
         self.items_list = QTableWidget()
         self.items_list.setFixedSize(665, 150)
         self.items_list_layout.addWidget(self.items_list)
 
-        self.items_list.setColumnCount(4)
+        self.items_list.setColumnCount(5)
         self.items_list.setRowCount(len(items[0]))
 
-        for index, item in enumerate(items):
-            self.items_list.setItem(index, 0, QTableWidgetItem(items[index]['color']))
+        for i in range(len(items)):
+            for index, key in enumerate(items[i]):
+                self.items_list.setItem(i, index, QTableWidgetItem(items[i][key]))
 
         self.items_list.setFixedSize(665, 150)
         self.items_list_layout.addWidget(self.items_list)
+
+
+    def count_of_items(self):
+        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+            return len(json.load(fout))
+
+
+    def subtotal_count(self):
+        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+            return sum(int(item['price']) for item in json.load(fout))
+
+
