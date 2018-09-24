@@ -21,7 +21,7 @@ class SupremeApp(QWidget):
         vertbox = QVBoxLayout()
 
         #             buttons               #
-        self.init_user_btn = QPushButton('Initialize User', self)
+        self.init_user_btn = QPushButton('Users Actions', self)
         self.connect(self.init_user_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_user_info_modal_window())
@@ -72,6 +72,7 @@ class SupremeApp(QWidget):
 
 
     def create_item_modal_window(self, args):
+        #        initializing cart json      #
         if os.path.isfile(self.scriptDir + "/items_to_buy.json"):
             pass
         else:

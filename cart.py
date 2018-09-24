@@ -88,22 +88,22 @@ class Cart(QDialog):
             self.subtotal_label.setText('subtotal: €{}'.format(sum(int(item['price']) for item in json.load(fout))))
 
 
-    # def remove_item(self, item, index):
-    #     print(self.items_list_layout.children())
-    #
-    #     with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
-    #         feeds = json.load(fout)
-    #
-    #     for feed in feeds:
-    #         if feed['name'] == item['name'] \
-    #             and feed['size'] == item['size'] \
-    #             and feed['color'] == item['color'] \
-    #             and feed['price'] == item['price']:
-    #             feeds.remove(feed)
-    #
-    #     with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
-    #         json.dump(feeds, fin, ensure_ascii=False)
-    #
-    #     self.count_of_items()
-    #     self.subtotal_count()
+    def remove_item(self, item, index):
+        print(self.items_list_layout.children())
+
+        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+            feeds = json.load(fout)
+
+        for feed in feeds:
+            if feed['name'] == item['name'] \
+                and feed['size'] == item['size'] \
+                and feed['color'] == item['color'] \
+                and feed['price'] == item['price']:
+                feeds.remove(feed)
+
+        with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
+            json.dump(feeds, fin, ensure_ascii=False)
+
+        self.count_of_items()
+        self.subtotal_count()
 
