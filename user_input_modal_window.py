@@ -2,10 +2,12 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import json
+import re
 
 
 class UserInfoModalWindow(QDialog):
     def __init__(self):
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         super().__init__()
         self.dialog_window = QDialog(self)
         self.dialog_window.setStyleSheet('font-family: Courier;')
@@ -28,6 +30,8 @@ class UserInfoModalWindow(QDialog):
         self.card_cvv_input = QLineEdit()
         self.cancel_button = QPushButton()
         self.save_button = QPushButton()
+        self.users_list_combo = QComboBox()
+        self.load_user_button = QPushButton()
 
         #         placing elements in a grid       #
         self.grid.addWidget(self.name_input,        0, 0, 1, 2)
@@ -46,6 +50,10 @@ class UserInfoModalWindow(QDialog):
         self.grid.addWidget(self.card_cvv_input,    2, 4, 1, 1)
         self.grid.addWidget(self.cancel_button,     6, 2, 1, 1)
         self.grid.addWidget(self.save_button,       6, 3, 1, 2)
+        self.grid.addWidget(self.users_list_combo,  5, 2, 1, 1)
+        self.grid.addWidget(self.load_user_button,  5, 3, 1, 2)
+
+        self.load_users_list()
 
         #        setting parameters for user inputs      #
         self.name_input.setPlaceholderText("Full name")
@@ -59,16 +67,20 @@ class UserInfoModalWindow(QDialog):
         self.card_number_input.setPlaceholderText("Card number")
         self.card_cvv_input.setPlaceholderText("CVV")
 
-        self.country_combo.addItems(['GB', 'NB', 'AT', 'BY', 'BE', 'BG', 'HR', 'CZ', 'DK', 'EE', 'FI',
-                                     'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LT', 'LU', 'MC',
-                                     'NL', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SI', 'ES', 'SE', 'CH', 'TR'])
-        self.card_type_combo.addItems(['Visa', 'American Express', 'Mastercard', 'Solo', 'PayPal'])
-        self.card_month_combo.addItems(['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13'])
-        self.card_year_combo.addItems(['2018', '2019', '2020', '2021', '2022', '2023',
-                                       '2024', '2025', '2026', '2027', '2028'])
+        self.countries = ['GB', 'NB', 'AT', 'BY', 'BE', 'BG', 'HR', 'CZ', 'DK', 'EE', 'FI',
+                          'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LT', 'LU', 'MC',
+                          'NL', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SI', 'ES', 'SE', 'CH', 'TR']
+        self.country_combo.addItems(self.countries)
+        self.cards = ['Visa', 'American Express', 'Mastercard', 'Solo', 'PayPal']
+        self.card_type_combo.addItems(self.cards)
+        self.months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+        self.card_month_combo.addItems(self.months)
+        self.years = ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028']
+        self.card_year_combo.addItems(self.years)
 
         self.cancel_button.setText('Cancel')
         self.save_button.setText('Accept And Save')
+        self.load_user_button.setText('Load')
 
         #           setting validators           #
         self.onlyInt = QIntValidator()
@@ -95,6 +107,10 @@ class UserInfoModalWindow(QDialog):
         self.card_cvv_input.setValidator(card_cvv_validator)
 
         #            connecting slots           #
+        self.connect(self.load_user_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.insert_user_info())
+
         self.connect(self.cancel_button,
                      SIGNAL('clicked()'),
                      lambda: self.cancel_button_clicked())
@@ -146,26 +162,64 @@ class UserInfoModalWindow(QDialog):
 
 
     def save_user_info(self):
-        user = {}
-        user['name'] = str(self.name_input.text())
-        user['email'] = str(self.email_input.text())
-        user['tel'] = str(self.telephone_input.text())
-        user['address'] = str(self.address_input.text())
-        user['address2'] = str(self.address2_input.text())
-        user['address3'] = str(self.address3_input.text())
-        user['city'] = str(self.city_input.text())
-        user['postcode'] = str(self.postcode_input.text())
-        user['country'] = str(self.country_combo.currentText())
-        user['card_type'] = str(self.card_type_combo.currentText())
-        user['card_number'] = str(self.card_number_input.text())
-        user['card_month'] = str(self.card_month_combo.currentText())
-        user['card_year'] = str(self.card_year_combo.currentText())
-        user['card_cvv'] = str(self.card_cvv_input.text())
+        user = {
+            'name': str(self.name_input.text()),
+            'email': str(self.email_input.text()),
+            'tel': str(self.telephone_input.text()),
+            'address': str(self.address_input.text()),
+            'address2': str(self.address2_input.text()),
+            'address3': str(self.address3_input.text()),
+            'city': str(self.city_input.text()),
+            'postcode': str(self.postcode_input.text()),
+            'country': str(self.country_combo.currentText()),
+            'card_type': str(self.card_type_combo.currentText()),
+            'card_number': str(self.card_number_input.text()),
+            'card_month': str(self.card_month_combo.currentText()),
+            'card_year': str(self.card_year_combo.currentText()),
+            'card_cvv': str(self.card_cvv_input.text())
+        }
 
         if any(user[field] == '' for field in user):
             print('Input Error!')
         else:
-            dump_name = '_'.join(user['name'].split(' ')) + '.json'
+            dump_name = 'user_' + '_'.join(user['name'].split(' ')) + '.json'
             with open(dump_name, mode='w', encoding='utf-8') as f:
                 json.dump(user, f)
             self.dialog_window.close()
+
+    def load_users_list(self):
+        files = os.listdir(self.scriptDir)
+        users = [file[5:-5]
+                 for file in files if re.search('user_(.*?).json', file)]
+        self.users_list_combo.addItems(users)
+
+    def insert_user_info(self):
+        user = self.users_list_combo.currentText()
+        with open('user_' + user + '.json', mode='r') as fout:
+            user_data = json.load(fout)
+            self.name_input.setText(user_data['name'])
+            self.email_input.setText(user_data['email'])
+            self.telephone_input.setText(user_data['tel'])
+            self.address_input.setText(user_data['address'])
+            self.address2_input.setText(user_data['address2'])
+            self.address3_input.setText(user_data['address3'])
+            self.city_input.setText(user_data['city'])
+            self.postcode_input.setText(user_data['postcode'])
+            self.country_combo.setCurrentIndex(self.countries.index(user_data['country']))
+            self.card_type_combo.setCurrentIndex(self.cards.index(user_data['card_type']))
+            self.card_number_input.setText(user_data['card_number'])
+            self.card_month_combo.setCurrentIndex(self.months.index(user_data['card_month']))
+            self.card_year_combo.setCurrentIndex(self.years.index(user_data['card_year']))
+            self.card_cvv_input.setText(user_data['card_cvv'])
+
+
+
+
+
+
+
+
+
+
+
+
