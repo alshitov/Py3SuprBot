@@ -114,7 +114,7 @@ class UserInfoModalWindow(QDialog):
         #            connecting slots           #
         self.connect(self.delete_user_button,
                      SIGNAL('clicked()'),
-                     lambda: self.delete_user())
+                     lambda: self.warning("delete"))
 
         self.connect(self.load_user_button,
                      SIGNAL('clicked()'),
@@ -122,7 +122,7 @@ class UserInfoModalWindow(QDialog):
 
         self.connect(self.cancel_button,
                      SIGNAL('clicked()'),
-                     lambda: self.cancel_button_clicked())
+                     lambda: self.warning("close"))
 
         self.connect(self.save_button,
                      SIGNAL('clicked()'),
@@ -137,7 +137,7 @@ class UserInfoModalWindow(QDialog):
         self.dialog_window.exec_()
 
 
-    def cancel_button_clicked(self):
+    def warning(self, option):
         self.accept_dialog = QDialog()
         self.grid = QGridLayout()
         self.warning_text = QLabel()
@@ -158,9 +158,16 @@ class UserInfoModalWindow(QDialog):
         self.accept_dialog.setWindowTitle('Accept action')
         self.accept_dialog.setModal(True)
 
-        self.connect(self.accept_button,
-                     SIGNAL('clicked()'),
-                     lambda: self.quit())
+        if option == "close":
+            self.connect(self.accept_button,
+                         SIGNAL('clicked()'),
+                         lambda: self.quit())
+
+        elif option == "delete":
+            self.connect(self.accept_button,
+                         SIGNAL('clicked()'),
+                         lambda: self.delete_user())
+
         self.connect(self.cancel_button,
                      SIGNAL('clicked()'),
                      self.accept_dialog.close)
@@ -238,6 +245,7 @@ class UserInfoModalWindow(QDialog):
             self.users_list_combo.removeItem(all_items.index(user))
         except FileNotFoundError:
             print("No user selected!")
+        self.accept_dialog.close()
 
 
 
