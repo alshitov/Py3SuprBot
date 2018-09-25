@@ -14,19 +14,19 @@ class Cart(QDialog):
         self.count_label = QLabel()
         self.subtotal_label = QLabel()
 
-        self.count_of_items()
-        self.subtotal_count()
+        self.cart_counter()
 
         self.items_list_layout = QVBoxLayout()
         self.items_list_layout.setContentsMargins(5, 5, 5, 5)
+        self.items_list_layout.setAlignment(Qt.AlignTop)
 
         self.build_table()
+        self.connect_buttons()
 
         self.area = QWidget()
         self.area.setLayout(self.items_list_layout)
         self.items_area = QScrollArea()
         self.items_area.setWidget(self.area)
-        self.items_area.setAlignment(Qt.AlignTop)
         self.items_area.show()
 
         self.layout.addWidget(self.count_label)
@@ -37,7 +37,7 @@ class Cart(QDialog):
         self.subtotal_label.setAlignment(Qt.AlignHCenter)
 
         self.cart_window.setLayout(self.layout)
-        self.cart_window.setFixedSize(850, 550)
+        self.cart_window.setFixedSize(900, 550)
         self.cart_window.setWindowTitle("Cart")
         self.cart_window.setModal(True)
         self.cart_window.exec_()
@@ -49,11 +49,6 @@ class Cart(QDialog):
 
         for item in items:
             self.item_box = QWidget()
-            self.item_box.setStyleSheet('''
-                QWidget {
-                    border: 1px dashed gray;
-                }
-            ''')
             self.item_layout = QHBoxLayout()
 
             self.item_image_label = QLabel()
@@ -68,52 +63,49 @@ class Cart(QDialog):
 
             pixmap = QPixmap(self.scriptDir + '/TempPNGS/' + item['image'] + '.png')
             self.item_image_label.setPixmap(pixmap)
-            self.item_details_label.setText(item['name'] + '\n' +item['color'] + '\n' + item['size'])
+            self.item_details_label.setText(item['name'] + '\nStyle: ' + item['color'] + '\nSize: ' + item['size'])
             self.item_remove_button.setText('Remove')
-
-            # self.connect(self.item_remove_button,
-            #              SIGNAL('clicked()'),
-            #              lambda: self.remove_item(item))
-
-            self.item_price_label.setText(str(item['price']))
+            self.item_price_label.setText('Price: ' + str(item['price']))
 
             self.item_box.setLayout(self.item_layout)
+            self.item_box.setFixedHeight(200)
             self.items_list_layout.addWidget(self.item_box)
 
 
-    def count_of_items(self):
+    def cart_counter(self):
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
-            self.count_label.setText('{} items in your basket.'.format(len(json.load(fout))))
+            items_to_buy = json.load(fout)
+
+            self.count_label.setText('{} items in your basket.'.format(len(items_to_buy)))
+            self.subtotal_label.setText('subtotal: €{}'.format(sum(int(item['price']) for item in items_to_buy)))
 
 
-    def subtotal_count(self):
-        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
-            self.subtotal_label.setText('subtotal: €{}'.format(sum(int(item['price']) for item in json.load(fout))))
+    def connect_buttons(self):
+        buttons = [self.items_list_layout.itemAt(index).widget().children()[3]
+                   for index in range(self.items_list_layout.count())]
+        for button in buttons:
+            self.conn(button)
+
+    #      polnaya huerga, voobsche hz che za bred, no po-drugomu ne robit))     #
+    def conn(self, btn):
+        self.connect(btn,
+                     SIGNAL('clicked()'),
+                     lambda: self.remove_item(btn))
 
 
-    def remove_item(self, item):
-        #       deleting row from table         #
-        if item['name'] + '\n' +item['color'] + '\n' + item['size'] == self.item_box.children()[2].text()\
-                and self.item_box is not None:
-            self.item_box.deleteLater()
-            # self.items_list_layout.removeWidget(self.item_box)
-
-
-        #       deleting item from dump         #
+    def remove_item(self, btn):
+        btn.parent().deleteLater()
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
             feeds = json.load(fout)
 
+        item = btn.parent().children()[2].text().split('\n')
+
         for feed in feeds:
-            if feed['name'] == item['name']\
-                    and feed['size'] == item['size']\
-                    and feed['color'] == item['color']\
-                    and feed['price'] == item['price']:
+            if feed['name'] == item[0]\
+                    and feed['size'] == item[2].split(': ')[1]\
+                    and feed['color'] == item[1].split(': ')[1]:
                 feeds.remove(feed)
+            else: continue
 
         with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
             json.dump(feeds, fin, ensure_ascii=False)
-
-        #       refreshing window information       #
-        self.count_of_items()
-        self.subtotal_count()
-
