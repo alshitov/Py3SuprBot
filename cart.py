@@ -4,9 +4,6 @@ from PyQt4.QtCore import *
 import json
 
 
-#TODO: regroup table after deleting item
-
-
 class Cart(QDialog):
     def __init__(self):
         super().__init__()
@@ -29,6 +26,7 @@ class Cart(QDialog):
         self.area.setLayout(self.items_list_layout)
         self.items_area = QScrollArea()
         self.items_area.setWidget(self.area)
+        self.items_area.setAlignment(Qt.AlignTop)
         self.items_area.show()
 
         self.layout.addWidget(self.count_label)
@@ -51,6 +49,11 @@ class Cart(QDialog):
 
         for item in items:
             self.item_box = QWidget()
+            self.item_box.setStyleSheet('''
+                QWidget {
+                    border: 1px dashed gray;
+                }
+            ''')
             self.item_layout = QHBoxLayout()
 
             self.item_image_label = QLabel()
@@ -68,9 +71,9 @@ class Cart(QDialog):
             self.item_details_label.setText(item['name'] + '\n' +item['color'] + '\n' + item['size'])
             self.item_remove_button.setText('Remove')
 
-            self.connect(self.item_remove_button,
-                         SIGNAL('clicked()'),
-                         lambda: self.remove_item(item, items.index(item)))
+            # self.connect(self.item_remove_button,
+            #              SIGNAL('clicked()'),
+            #              lambda: self.remove_item(item))
 
             self.item_price_label.setText(str(item['price']))
 
@@ -88,22 +91,29 @@ class Cart(QDialog):
             self.subtotal_label.setText('subtotal: €{}'.format(sum(int(item['price']) for item in json.load(fout))))
 
 
-    def remove_item(self, item, index):
-        print(self.items_list_layout.children())
+    def remove_item(self, item):
+        #       deleting row from table         #
+        if item['name'] + '\n' +item['color'] + '\n' + item['size'] == self.item_box.children()[2].text()\
+                and self.item_box is not None:
+            self.item_box.deleteLater()
+            # self.items_list_layout.removeWidget(self.item_box)
 
+
+        #       deleting item from dump         #
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
             feeds = json.load(fout)
 
         for feed in feeds:
-            if feed['name'] == item['name'] \
-                and feed['size'] == item['size'] \
-                and feed['color'] == item['color'] \
-                and feed['price'] == item['price']:
+            if feed['name'] == item['name']\
+                    and feed['size'] == item['size']\
+                    and feed['color'] == item['color']\
+                    and feed['price'] == item['price']:
                 feeds.remove(feed)
 
         with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
             json.dump(feeds, fin, ensure_ascii=False)
 
+        #       refreshing window information       #
         self.count_of_items()
         self.subtotal_count()
 

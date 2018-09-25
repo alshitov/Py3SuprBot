@@ -243,16 +243,21 @@ class UserInfoModalWindow(QDialog):
             print("User", user, "deleted!")
             all_items = [self.users_list_combo.itemText(i) for i in range(self.users_list_combo.count())]
             self.users_list_combo.removeItem(all_items.index(user))
+            #      clearing fields      #
+            self.accept_dialog.close()
+            self.name_input.clear()
+            self.email_input.clear()
+            self.telephone_input.clear()
+            self.address_input.clear()
+            self.address2_input.clear()
+            self.address3_input.clear()
+            self.city_input.clear()
+            self.postcode_input.clear()
+            self.country_combo.clear()
+            self.card_type_combo.clear()
+            self.card_number_input.clear()
+            self.card_month_combo.clear()
+            self.card_year_combo.clear()
+            self.card_cvv_input.clear()
         except FileNotFoundError:
             print("No user selected!")
-        self.accept_dialog.close()
-
-
-
-
-
-
-
-
-
-
