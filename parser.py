@@ -12,28 +12,44 @@ class Parser():
         return request.text
 
 
-    def parse_proxies(self):
+    def parse_http_proxies(self):
         url = 'https://www.free-proxy-list.net/'
-        self.html = self.get_html(url)
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        html = self.get_html(url)
+        soup = BeautifulSoup(html, 'html.parser')
 
-        proxy_table = self.soup.find('table', id='proxylisttable')
+        proxy_table = soup.find('table', id='proxylisttable')
         rows = proxy_table.find_all('tr')
-        self.proxies = []
+        self.http_proxies = []
 
         for row in rows:
             tds = row.find_all('td')
             tds = [td.text.strip() for td in tds]
             if tds:
                 proxy = 'http://' + str(tds[0]) + ':' + str(tds[1])
-                self.proxies.append(proxy)
+                self.http_proxies.append(proxy)
 
-        return self.proxies
+        with open('http_proxies.txt', mode='w', encoding='utf-8') as fin:
+            fin.write('\n'.join(self.http_proxies))
 
 
-    def dump_proxies(self, list, filename):
-        with open(filename, mode='w', encoding='utf-8') as fin:
-            fin.write('\n'.join(list))
+    def parse_ssl_https_proxies(self):
+        url = 'https://www.sslproxies.org/'
+        html = self.get_html(url)
+        soup = BeautifulSoup(html, 'html.parser')
+
+        proxy_table = soup.find('table', id='proxylisttable')
+        rows = proxy_table.find_all('tr')
+        self.https_proxies = []
+
+        for row in rows:
+            tds = row.find_all('td')
+            tds = [td.text.strip() for td in tds]
+            if tds:
+                proxy = 'http://' + str(tds[0]) + ':' + str(tds[1])
+                self.https_proxies.append(proxy)
+
+        with open('https_proxies.txt', mode='w', encoding='utf-8') as fin:
+            fin.write('\n'.join(self.https_proxies))
 
 
     def parse_sizing_tables(self):
