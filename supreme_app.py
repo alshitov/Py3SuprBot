@@ -96,6 +96,14 @@ class SupremeApp(QWidget):
 
 
     def create_table(self):
+        # create check method to check if drop didnt change so not to download items once again
+        parser_ = Parser()
+        parser_.parse_main_window_content()
+        with open('current_drop.json', mode='r') as fin:
+            drop = json.load(fin)
+
+        parser_.download_images()
+
         images_path = self.scriptDir + '/TempPNGS'
         for i in range(6):
             for j in range(5):

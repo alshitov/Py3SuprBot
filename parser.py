@@ -1,11 +1,13 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 from random import choice
+import json
 
 
 class Parser():
     def __init__(self):
-        pass
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
 
 
     def get_html(self, url, headers=None, proxies=None):
@@ -95,16 +97,16 @@ class Parser():
         # target url
         url = 'https://www.supremecommunity.com'
         # reading (already refreshed) proxies and user-agents for request
-        agents_list = open('useragents.txt').read().split('\n')
-        http_proxies = open('http_proxies.txt').read().split('\n')
-        https_proxies = open('https_proxies.txt').read().split('\n')
+        self.agents_list = open('useragents.txt').read().split('\n')
+        self.http_proxies = open('http_proxies.txt').read().split('\n')
+        self.https_proxies = open('https_proxies.txt').read().split('\n')
         # setting up proxy dict
-        proxies = {
-            'http': choice(http_proxies),
-            'https': choice(https_proxies)
+        self.proxies = {
+            'http': choice(self.http_proxies),
+            'https': choice(self.https_proxies)
         }
         # headers like from normal browser
-        headers = {
+        self.headers = {
             "Authority": "www.supremecommunity.com",
             "Method": "GET",
             "Path": "/",
@@ -114,12 +116,12 @@ class Parser():
             "Accept-Language": "en-US,en;q=0.9,ru;q=0.8",
             "Cache-Control": "max-age=0",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": choice(agents_list)
+            "User-Agent": choice(self.agents_list)
         }
 
         try:
             # get to page with droplists
-            html = self.get_html(url + '/season/latest/droplists', headers, proxies)
+            html = self.get_html(url + '/season/latest/droplists', self.headers, self.proxies)
 
             # init bs object
             soup = BeautifulSoup(html, 'html.parser')
@@ -131,7 +133,7 @@ class Parser():
             link_to_items = url + latest
 
             # get to latest(future) froplist
-            html = self.get_html(link_to_items, headers, proxies)
+            html = self.get_html(link_to_items, self.headers, self.proxies)
 
             # re-init bs object with new content
             soup = BeautifulSoup(html, 'html.parser')
@@ -140,7 +142,7 @@ class Parser():
             items_divs = soup.select('div.masonry__item')
 
             # forming dicrtionaries with items description
-            drop = []
+            self.drop = []
             for div in items_divs:
                 drop_elem = {}
                 # e.g.:<div class="masonry__item col-sm-4 col-xs-6 filter-sweatshirts"...>
@@ -154,12 +156,35 @@ class Parser():
                 drop_elem['price'] = div.select_one('span.label-price').text.strip()
                 drop_elem['image'] = url + str(img.get('src'))  # links to images, download later!
 
-                drop.append(drop_elem)
+                self.drop.append(drop_elem)
 
-            for i in drop:
-                print(i)
+            with open('current_drop.json', 'w') as fin:
+                json.dump(self.drop, fin, ensure_ascii=False)
 
         except requests.exceptions.ConnectionError:
-            print('Error! SSL: {}, HTTP: {}'.format(proxies['https'], proxies['http']))
+            print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))
             # if error occurred, try parsing once again until success
             self.parse_main_window_content()
+
+
+    def download_images(self):
+        try:
+            self.links = [elem['image'] for elem in self.drop]
+        except KeyError:
+            print("Droplist is empty")
+
+        self.proxies = {
+            'http': choice(self.http_proxies),
+            'https': choice(self.https_proxies)
+        }
+
+        for index, url in enumerate(self.links):
+            try:
+                print("Downloading image: ", index, ".jpg...")
+                req = requests.get(url, headers=self.headers, proxies=self.proxies)
+                with open(self.scriptDir + '/img/{}.jpg'.format(str(index)), mode='wb') as f:
+                    f.write(req.content)
+                    print("Success!")
+            except requests.exceptions.ConnectionError:
+                print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))
+                self.download_images()
