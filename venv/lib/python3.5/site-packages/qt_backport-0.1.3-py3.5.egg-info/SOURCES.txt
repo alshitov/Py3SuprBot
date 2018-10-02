@@ -1,0 +1,16 @@
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+PyQt4/__init__.py
+PySide/__init__.py
+qt_backport/VERSION
+qt_backport/__init__.py
+qt_backport/qt5_backport.py
+qt_backport.egg-info/PKG-INFO
+qt_backport.egg-info/SOURCES.txt
+qt_backport.egg-info/dependency_links.txt
+qt_backport.egg-info/top_level.txt
+tests/__init__.py
+tests/test_PyQt4Emulator.py
+tests/test_PySideEmulator.py
