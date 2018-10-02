@@ -145,7 +145,7 @@ class Parser():
             self.drop = []
             for div in items_divs:
                 drop_elem = {}
-                # e.g.:<div class="masonry__item col-sm-4 col-xs-6 filter-sweatshirts"...>
+                # e.g.:<div class="masonry__item col-sm-4 col-xs-6 filter-sweatshirts"...> test
                 drop_elem['type'] = div.get('class')[3][7:]
 
                 img = div.find('img')
