@@ -20,7 +20,7 @@ class ItemModalWindow(QDialog):
                      'price': args[4]}
         #                image              #
         self.item_image = QLabel()
-        pixmap = QPixmap(self.scriptDir + '/NewJPGS/' + str(self.item['picture']) + '.jpg')
+        pixmap = QPixmap(self.scriptDir + '/img/' + str(self.item['picture']) + '.jpg')
         self.item_image.setPixmap(pixmap)
 
         #              description          #

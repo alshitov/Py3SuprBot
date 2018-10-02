@@ -10,9 +10,6 @@ from cart import Cart
 from parser import Parser
 
 
-#TODO: limit items per type when adding to basket
-
-
 class SupremeApp(QWidget):
     def __init__(self):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
@@ -96,33 +93,44 @@ class SupremeApp(QWidget):
 
 
     def create_table(self):
-        # create check method to check if drop didnt change so not to download items once again
+        # initializing parser
         parser_ = Parser()
+
+        # parse_main_window_content() method first checks if latest drop has been changed
+        # to do that, method finds a link to the latest droplist and compares it with a link that is saved in 'latest.txt'
+        # if links differ, it parses droplist from community and saves it to json dump
+        # also it writes down last used link to 'latest.txt'
         parser_.parse_main_window_content()
+
+        # reading content from dump
         with open('current_drop.json', mode='r') as fin:
             drop = json.load(fin)
 
-        parser_.download_images()
+        # path where to find images for main window mesh
+        images_path = self.scriptDir + '/img'
 
-        images_path = self.scriptDir + '/TempPNGS'
-        for i in range(6):
-            for j in range(5):
-                img_name = str(i) + str(j) + '.png'
-                if img_name in os.listdir(images_path):
-                    btn = QPushButton()
-                    btn.setIcon(QIcon('TempPNGS/' + img_name))
-                    btn.setIconSize(QSize(200, 200))
-                    self.field_layout.addWidget(btn, i, j)
-                    # temp #
-                    item_name = 'Supreme®/Comme des Garçons SHIRT® Split Box Logo Tee'
-                    colorways = ['White', 'Black', 'Red']
-                    descr = 'Description: All cotton crewneck with vertical seam at front and diagonal seam at lower back.'\
-                            '\nPrinted logos on front and on back.'\
-                            '\nMade exclusively for Supreme.'
-                    price = '\n\nPrice: 54doll, 48pounds, 54eur, 9720y'
+        # building mesh
+        print(os.listdir(images_path))
 
-                    image_num = str(i) + str(j)
-                    argsz = [item_name, colorways, descr, image_num, price]
-                    self.connect(btn,
-                                 SIGNAL('clicked()'),
-                                 lambda: self.create_item_modal_window(argsz))
+
+        # count = len(os.listdir(images_path))
+        # for i in range(count % 5 + 1):
+        #     for j in range(5):
+        #         img_name = str(i) + str(j) + '.jpg'
+        #         if img_name in os.listdir(images_path):
+        #             btn = QPushButton()
+        #             btn.setIcon(QIcon('img/' + img_name))
+        #             btn.setIconSize(QSize(200, 200))
+        #             self.field_layout.addWidget(btn, i, j)
+        #             # temp #
+        #             item_name = 'Supreme®/Comme des Garçons SHIRT® Split Box Logo Tee'
+        #             colorways = ['White', 'Black', 'Red']
+        #             descr = 'Description: All cotton crewneck with vertical seam at front and diagonal seam at lower back.'\
+        #                     '\nPrinted logos on front and on back.'\
+        #                     '\nMade exclusively for Supreme.'
+        #             price = '\n\nPrice: 54doll, 48pounds, 54eur, 9720y'
+        #
+        #             argsz = [item_name, colorways, descr, image_num, price]
+        #             self.connect(btn,
+        #                          SIGNAL('clicked()'),
+        #                          lambda: self.create_item_modal_window(argsz))

@@ -131,35 +131,51 @@ class Parser():
 
             # forming latest(future) droplist link
             link_to_items = url + latest
+            print(link_to_items)
 
-            # get to latest(future) froplist
-            html = self.get_html(link_to_items, self.headers, self.proxies)
+            # reading last saved link from local storage
+            with open('latest.txt', mode='r') as f:
+                curr_link = f.read().strip()
 
-            # re-init bs object with new content
-            soup = BeautifulSoup(html, 'html.parser')
+            # if latest link has been changed - that means new items has been dropped
+            if link_to_items != curr_link:
+                # first, write down current link to local storage
+                with open('latest.txt', mode='w') as f:
+                    f.write(link_to_items)
 
-            # find items divs which contain items type, name, picture (and price)
-            items_divs = soup.select('div.masonry__item')
+                # get to latest(future) froplist
+                html = self.get_html(link_to_items, self.headers, self.proxies)
 
-            # forming dicrtionaries with items description
-            self.drop = []
-            for div in items_divs:
-                drop_elem = {}
-                # e.g.:<div class="masonry__item col-sm-4 col-xs-6 filter-sweatshirts"...> test
-                drop_elem['type'] = div.get('class')[3][7:]
+                # re-init bs object with new content
+                soup = BeautifulSoup(html, 'html.parser')
 
-                img = div.find('img')
-                img_alt_split = img.get('alt').split(' - ')
+                # find items divs which contain items type, name, picture (and price)
+                items_divs = soup.select('div.masonry__item')
 
-                drop_elem['name'] = img_alt_split[0].strip()
-                drop_elem['description'] = img_alt_split[1].strip()
-                drop_elem['price'] = div.select_one('span.label-price').text.strip()
-                drop_elem['image'] = url + str(img.get('src'))  # links to images, download later!
+                # forming dicrtionaries with items description
+                self.drop = []
+                for div in items_divs:
+                    drop_elem = {}
+                    # e.g.:<div class="masonry__item col-sm-4 col-xs-6 filter-sweatshirts"...> test
+                    drop_elem['type'] = div.get('class')[3][7:]
 
-                self.drop.append(drop_elem)
+                    img = div.find('img')
+                    img_alt_split = img.get('alt').split(' - ')
 
-            with open('current_drop.json', 'w') as fin:
-                json.dump(self.drop, fin, ensure_ascii=False)
+                    drop_elem['name'] = img_alt_split[0].strip()
+                    drop_elem['description'] = img_alt_split[1].strip()
+                    if div.select_one('span.label-price'):
+                        drop_elem['price'] = div.select_one('span.label-price').text.strip()
+                    drop_elem['image'] = url + str(img.get('src'))  # links to images, download later!
+
+                    self.drop.append(drop_elem)
+
+                with open('current_drop.json', 'w') as fin:
+                    json.dump(self.drop, fin, ensure_ascii=False)
+
+                self.download_images()
+
+            else: print("Items already up to date!")
 
         except requests.exceptions.ConnectionError:
             print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))
@@ -168,23 +184,32 @@ class Parser():
 
 
     def download_images(self):
-        try:
-            self.links = [elem['image'] for elem in self.drop]
-        except KeyError:
-            print("Droplist is empty")
+        # reading list from dump
+        with open('current_drop.json', 'r') as fin:
+            droplist = json.load(fin)
 
+        # finding links
+        self.links = [elem['image'] for elem in droplist]
+
+        # changing proxies
         self.proxies = {
             'http': choice(self.http_proxies),
             'https': choice(self.https_proxies)
         }
 
-        for index, url in enumerate(self.links):
+        # indices for table
+        i = j = 0
+        for url in self.links:
             try:
-                print("Downloading image: ", index, ".jpg...")
+                print("Downloading image: ", str(i) + str(j), ".jpg...")
                 req = requests.get(url, headers=self.headers, proxies=self.proxies)
-                with open(self.scriptDir + '/img/{}.jpg'.format(str(index)), mode='wb') as f:
+                with open(self.scriptDir + '/img/{}.jpg'.format(str(i) + str(j)), mode='wb') as f:
                     f.write(req.content)
                     print("Success!")
+                if j < 4:
+                    j += 1
+                else:
+                    i += 1
+                    j = 0
             except requests.exceptions.ConnectionError:
                 print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))
-                self.download_images()
