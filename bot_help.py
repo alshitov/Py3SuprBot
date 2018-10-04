@@ -41,6 +41,12 @@ class BotHelpWindow(QDialog):
         self.info_label_4.setWordWrap(True)
         self.info_label_5.setWordWrap(True)
 
+        self.info_label_1.setFixedHeight(100)
+        self.info_label_2.setFixedHeight(100)
+        self.info_label_3.setFixedHeight(100)
+        self.info_label_4.setFixedHeight(100)
+        self.info_label_5.setFixedHeight(100)
+
         # labels info - temp
         self.info_label_1.setText(self.info)
         self.info_label_2.setText(self.info)
@@ -73,11 +79,12 @@ class BotHelpWindow(QDialog):
         # setting scroll area
         self.area = QWidget()
         self.area.setFixedWidth(680)
-        self.area.setMinimumHeight(260)
+        # self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
+        self.area.setFixedHeight(260)
         self.area.setLayout(self.info_list_layout)
 
         self.scroll_area = QScrollArea()
-        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        # self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area.setWidget(self.area)
 
         # adding scroll area to main layout
@@ -118,9 +125,9 @@ class BotHelpWindow(QDialog):
         # if label visible - make it hidden and visa versa
         if label.isVisible():
             label.setVisible(False)
-            self.area.setMinimumHeight(self.area.height() - label.height())
+            self.area.setFixedHeight(self.area.height() - label.height())
             print(self.area.height())
         else:
             label.setVisible(True)
-            self.area.setMinimumHeight(self.area.height() + label.height())
+            self.area.setFixedHeight(self.area.height() + label.height())
             print(self.area.height())
