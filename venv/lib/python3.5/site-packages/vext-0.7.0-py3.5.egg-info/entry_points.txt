@@ -1,0 +1,3 @@
+[console_scripts]
+vext = vext.cmdline:main
+

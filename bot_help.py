@@ -7,7 +7,10 @@ class BotHelpWindow(QDialog):
         super().__init__()
         self.bot_help_window = QDialog()
         self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignTop)
+
+        self.info_list_layout = QVBoxLayout()
+        self.info_list_layout.setContentsMargins(5, 5, 5, 5)
+        self.info_list_layout.setAlignment(Qt.AlignTop)
 
         # creating buttons
         self.info_button_1 = QPushButton("Info1")
@@ -56,16 +59,29 @@ class BotHelpWindow(QDialog):
         self.connect_buttons()
 
         # placing elements
-        self.layout.addWidget(self.info_button_1)
-        self.layout.addWidget(self.info_label_1)
-        self.layout.addWidget(self.info_button_2)
-        self.layout.addWidget(self.info_label_2)
-        self.layout.addWidget(self.info_button_3)
-        self.layout.addWidget(self.info_label_3)
-        self.layout.addWidget(self.info_button_4)
-        self.layout.addWidget(self.info_label_4)
-        self.layout.addWidget(self.info_button_5)
-        self.layout.addWidget(self.info_label_5)
+        self.info_list_layout.addWidget(self.info_button_1)
+        self.info_list_layout.addWidget(self.info_label_1)
+        self.info_list_layout.addWidget(self.info_button_2)
+        self.info_list_layout.addWidget(self.info_label_2)
+        self.info_list_layout.addWidget(self.info_button_3)
+        self.info_list_layout.addWidget(self.info_label_3)
+        self.info_list_layout.addWidget(self.info_button_4)
+        self.info_list_layout.addWidget(self.info_label_4)
+        self.info_list_layout.addWidget(self.info_button_5)
+        self.info_list_layout.addWidget(self.info_label_5)
+
+        # setting scroll area
+        self.area = QWidget()
+        self.area.setFixedWidth(680)
+        self.area.setMinimumHeight(260)
+        self.area.setLayout(self.info_list_layout)
+
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area.setWidget(self.area)
+
+        # adding scroll area to main layout
+        self.layout.addWidget(self.scroll_area)
 
         # window settings
         self.bot_help_window.setLayout(self.layout)
@@ -102,5 +118,9 @@ class BotHelpWindow(QDialog):
         # if label visible - make it hidden and visa versa
         if label.isVisible():
             label.setVisible(False)
+            self.area.setMinimumHeight(self.area.height() - label.height())
+            print(self.area.height())
         else:
             label.setVisible(True)
+            self.area.setMinimumHeight(self.area.height() + label.height())
+            print(self.area.height())

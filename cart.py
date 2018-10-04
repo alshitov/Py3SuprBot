@@ -27,7 +27,6 @@ class Cart(QDialog):
         self.area.setLayout(self.items_list_layout)
         self.items_area = QScrollArea()
         self.items_area.setWidget(self.area)
-        self.items_area.show()
 
         self.layout.addWidget(self.count_label)
         self.layout.addWidget(self.items_area)

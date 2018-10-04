@@ -26,7 +26,6 @@ class SizingHelpModalWindow(QDialog):
         self.area.setLayout(self.tables_layout)
         self.tables_area = QScrollArea()
         self.tables_area.setWidget(self.area)
-        self.tables_area.show()
 
         #       placing widgets         #
         self.layout.addWidget(self.logo_label)

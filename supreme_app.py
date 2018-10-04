@@ -94,8 +94,10 @@ class SupremeApp(QWidget):
     def create_cart_window(self):
         window_modal = Cart()
 
+
     def create_bot_help_window(self):
         window_modal = BotHelpWindow()
+
 
     def create_table(self):
         # initializing parser
@@ -134,3 +136,7 @@ class SupremeApp(QWidget):
                              img_name
                     ]
                     item_index += 1
+
+                    self.connect(btn,
+                                 SIGNAL('clicked()'),
+                                 lambda: self.create_item_modal_window(argsz))

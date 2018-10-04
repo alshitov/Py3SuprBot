@@ -1,0 +1,22 @@
+Metadata-Version: 1.1
+Name: vext
+Version: 0.7.0
+Summary: Use system python packages from a virtualenv
+Home-page: https://github.com/stuaxo/vext
+Author: Stuart Axon
+Author-email: stuaxo2@yahoo.com
+License: MIT
+Description: 
+        Use specific system python packages from virtualenv without --system-site-packages.
+        
+        Supports:
+        pygtk, gi (gtk3), qt4, qt5, panda3d, vtk, wx
+        
+Keywords: setuptools development
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
