@@ -8,6 +8,7 @@ from item_modal_window import ItemModalWindow
 from sizing_window import SizingHelpModalWindow
 from cart import Cart
 from parser import Parser
+from bot_help import BotHelpWindow
 
 
 class SupremeApp(QWidget):
@@ -29,12 +30,14 @@ class SupremeApp(QWidget):
                      lambda: self.create_cart_window())
 
         self.sizing_btn = QPushButton('Sizing', self)
-
         self.connect(self.sizing_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_sizing_help_window())
 
         self.bot_help_btn = QPushButton('Bot Help', self)
+        self.connect(self.bot_help_btn,
+                     SIGNAL('clicked()'),
+                     lambda: self.create_bot_help_window())
 
         self.start_btn = QPushButton('Start Bot', self)
 
@@ -47,7 +50,7 @@ class SupremeApp(QWidget):
         #            items field            #
         self.field_layout = QGridLayout()
 
-        self.create_table()
+        # self.create_table()
 
         area = QWidget()
         area.setLayout(self.field_layout)
@@ -61,7 +64,7 @@ class SupremeApp(QWidget):
         self.setGeometry(2500, 100, 1186, 875)
         self.setLayout(vertbox)
         self.setFixedWidth(1186)
-        self.setWindowTitle('PySupBot')
+        self.setWindowTitle('Py3SuprBot')
 
         self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'logo.png'))
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
@@ -75,7 +78,7 @@ class SupremeApp(QWidget):
         else:
             os.system("touch items_to_buy.json")
             with open("items_to_buy.json", mode='r', encoding='utf-8') as f:
-                json.dump([], f)
+                json.dump('[]', f)
 
         window_modal = ItemModalWindow(args)
 
@@ -91,6 +94,8 @@ class SupremeApp(QWidget):
     def create_cart_window(self):
         window_modal = Cart()
 
+    def create_bot_help_window(self):
+        window_modal = BotHelpWindow()
 
     def create_table(self):
         # initializing parser
@@ -110,27 +115,22 @@ class SupremeApp(QWidget):
         images_path = self.scriptDir + '/img'
 
         # building mesh
-        print(os.listdir(images_path))
 
+        item_index = 0
+        for i in range(len(drop) % 5 + 1):
+            for j in range(5):
+                img_name = str(i) + str(j) + '.jpg'
+                if img_name in os.listdir(images_path):
 
-        # count = len(os.listdir(images_path))
-        # for i in range(count % 5 + 1):
-        #     for j in range(5):
-        #         img_name = str(i) + str(j) + '.jpg'
-        #         if img_name in os.listdir(images_path):
-        #             btn = QPushButton()
-        #             btn.setIcon(QIcon('img/' + img_name))
-        #             btn.setIconSize(QSize(200, 200))
-        #             self.field_layout.addWidget(btn, i, j)
-        #             # temp #
-        #             item_name = 'Supreme®/Comme des Garçons SHIRT® Split Box Logo Tee'
-        #             colorways = ['White', 'Black', 'Red']
-        #             descr = 'Description: All cotton crewneck with vertical seam at front and diagonal seam at lower back.'\
-        #                     '\nPrinted logos on front and on back.'\
-        #                     '\nMade exclusively for Supreme.'
-        #             price = '\n\nPrice: 54doll, 48pounds, 54eur, 9720y'
-        #
-        #             argsz = [item_name, colorways, descr, image_num, price]
-        #             self.connect(btn,
-        #                          SIGNAL('clicked()'),
-        #                          lambda: self.create_item_modal_window(argsz))
+                    btn = QPushButton()
+                    btn.setIcon(QIcon('img/' + img_name))
+                    btn.setIconSize(QSize(200, 200))
+                    self.field_layout.addWidget(btn, i, j)
+
+                    argsz = [drop[item_index]['type'],
+                             drop[item_index]['name'],
+                             drop[item_index]['description'],
+                             ['White', 'Black', 'Red'],
+                             img_name
+                    ]
+                    item_index += 1

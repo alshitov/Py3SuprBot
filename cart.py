@@ -86,7 +86,7 @@ class Cart(QDialog):
         for button in buttons:
             self.conn(button)
 
-    #      polnaya huerga, voobsche hz che za bred, no po-drugomu ne robit))     #
+
     def conn(self, btn):
         self.connect(btn,
                      SIGNAL('clicked()'),

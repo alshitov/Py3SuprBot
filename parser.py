@@ -131,7 +131,6 @@ class Parser():
 
             # forming latest(future) droplist link
             link_to_items = url + latest
-            print(link_to_items)
 
             # reading last saved link from local storage
             with open('latest.txt', mode='r') as f:
