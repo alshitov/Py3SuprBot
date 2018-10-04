@@ -2,6 +2,7 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import json
+import re
 
 
 class Cart(QDialog):
@@ -60,8 +61,8 @@ class Cart(QDialog):
             self.item_layout.addWidget(self.item_remove_button)
             self.item_layout.addWidget(self.item_price_label)
 
-            pixmap = QPixmap(self.scriptDir + '/TempPNGS/' + item['image'] + '.png')
-            self.item_image_label.setPixmap(pixmap)
+            # pixmap = QPixmap(self.scriptDir + '/TempPNGS/' + item['image'] + '.png')
+            # self.item_image_label.setPixmap(pixmap)
             self.item_details_label.setText(item['name'] + '\nStyle: ' + item['color'] + '\nSize: ' + item['size'])
             self.item_remove_button.setText('Remove')
             self.item_price_label.setText('Price: ' + str(item['price']))
@@ -76,7 +77,11 @@ class Cart(QDialog):
             items_to_buy = json.load(fout)
 
             self.count_label.setText('{} items in your basket.'.format(len(items_to_buy)))
-            self.subtotal_label.setText('subtotal: €{}'.format(sum(int(item['price']) for item in items_to_buy)))
+
+            subtotal_usd = sum(int(re.findall('(\w+)', item['price'])[0]) for item in items_to_buy)
+            subtotal_pound = sum(int(re.findall('(\w+)', item['price'])[1]) for item in items_to_buy)
+
+            self.subtotal_label.setText('subtotal: ${}, £{}'.format(subtotal_usd, subtotal_pound))
 
 
     def connect_buttons(self):
@@ -108,3 +113,5 @@ class Cart(QDialog):
 
         with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
             json.dump(feeds, fin, ensure_ascii=False)
+
+        self.cart_counter()

@@ -50,7 +50,8 @@ class SupremeApp(QWidget):
         #            items field            #
         self.field_layout = QGridLayout()
 
-        # self.create_table()
+        # creating main window table with items
+        self.create_table()
 
         area = QWidget()
         area.setLayout(self.field_layout)
@@ -107,36 +108,44 @@ class SupremeApp(QWidget):
         # to do that, method finds a link to the latest droplist and compares it with a link that is saved in 'latest.txt'
         # if links differ, it parses droplist from community and saves it to json dump
         # also it writes down last used link to 'latest.txt'
-        parser_.parse_main_window_content()
+
+        # parser_.parse_main_window_content()
 
         # reading content from dump
         with open('current_drop.json', mode='r') as fin:
-            drop = json.load(fin)
+            self.drop = json.load(fin)
 
         # path where to find images for main window mesh
         images_path = self.scriptDir + '/img'
 
-        # building mesh
+        # building table
+        row = 0
+        column = 0
 
-        item_index = 0
-        for i in range(len(drop) % 5 + 1):
-            for j in range(5):
-                img_name = str(i) + str(j) + '.jpg'
-                if img_name in os.listdir(images_path):
+        for index, item in enumerate(self.drop):
+            btn = QPushButton()
+            btn.setIcon(QIcon('img/' + str(index)))
+            btn.setIconSize(QSize(200, 200))
 
-                    btn = QPushButton()
-                    btn.setIcon(QIcon('img/' + img_name))
-                    btn.setIconSize(QSize(200, 200))
-                    self.field_layout.addWidget(btn, i, j)
+            self.field_layout.addWidget(btn, row, column)
+            if column == 4:
+                column = 0
+                row += 1
+            else:
+                column += 1
 
-                    argsz = [drop[item_index]['type'],
-                             drop[item_index]['name'],
-                             drop[item_index]['description'],
-                             ['White', 'Black', 'Red'],
-                             img_name
-                    ]
-                    item_index += 1
+        self.connect_buttons()
 
-                    self.connect(btn,
-                                 SIGNAL('clicked()'),
-                                 lambda: self.create_item_modal_window(argsz))
+
+    def connect_buttons(self):
+        buttons = [self.field_layout.itemAt(index).widget()
+                   for index in range(self.field_layout.count())]
+
+        for index, button in enumerate(buttons):
+            self.conn(index, button)
+
+
+    def conn(self, index, button):
+        self.connect(button,
+                     SIGNAL('clicked()'),
+                     lambda: self.create_item_modal_window(self.drop[index]))

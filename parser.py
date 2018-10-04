@@ -137,7 +137,7 @@ class Parser():
                 curr_link = f.read().strip()
 
             # if latest link has been changed - that means new items has been dropped
-            if link_to_items != curr_link:
+            if link_to_items == curr_link:
                 # first, write down current link to local storage
                 with open('latest.txt', mode='w') as f:
                     f.write(link_to_items)
@@ -153,21 +153,26 @@ class Parser():
 
                 # forming dicrtionaries with items description
                 self.drop = []
-                for div in items_divs:
-                    drop_elem = {}
-                    # e.g.:<div class="masonry__item col-sm-4 col-xs-6 filter-sweatshirts"...> test
-                    drop_elem['type'] = div.get('class')[3][7:]
+                self.links = []
 
+                for index, div in enumerate(items_divs):
+                    drop_elem = {}
                     img = div.find('img')
                     img_alt_split = img.get('alt').split(' - ')
 
+                    drop_elem['type'] = div.get('class')[3][7:]
                     drop_elem['name'] = img_alt_split[0].strip()
                     drop_elem['description'] = img_alt_split[1].strip()
-                    if div.select_one('span.label-price'):
+                    if div.select_one('span.label-price') is not None:
                         drop_elem['price'] = div.select_one('span.label-price').text.strip()
-                    drop_elem['image'] = url + str(img.get('src'))  # links to images, download later!
+                    else:
+                        drop_elem['price'] = '$0/£0'
+                    drop_elem['image'] = str(index) + '.jpg'
 
                     self.drop.append(drop_elem)
+
+                    link_to_item_image = url + str(img.get('src'))
+                    self.links.append(link_to_item_image)
 
                 with open('current_drop.json', 'w') as fin:
                     json.dump(self.drop, fin, ensure_ascii=False)
@@ -187,28 +192,19 @@ class Parser():
         with open('current_drop.json', 'r') as fin:
             droplist = json.load(fin)
 
-        # finding links
-        self.links = [elem['image'] for elem in droplist]
-
         # changing proxies
         self.proxies = {
             'http': choice(self.http_proxies),
             'https': choice(self.https_proxies)
         }
 
-        # indices for table
-        i = j = 0
-        for url in self.links:
+        # downloading images
+        for index, url in enumerate(self.links):
             try:
-                print("Downloading image: ", str(i) + str(j), ".jpg...")
+                print("Downloading image: ", str(index) , ".jpg...")
                 req = requests.get(url, headers=self.headers, proxies=self.proxies)
-                with open(self.scriptDir + '/img/{}.jpg'.format(str(i) + str(j)), mode='wb') as f:
+                with open(self.scriptDir + '/img/{}.jpg'.format(str(index)), mode='wb') as f:
                     f.write(req.content)
                     print("Success!")
-                if j < 4:
-                    j += 1
-                else:
-                    i += 1
-                    j = 0
             except requests.exceptions.ConnectionError:
                 print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))

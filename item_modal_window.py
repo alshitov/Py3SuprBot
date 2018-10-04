@@ -5,32 +5,25 @@ import json
 
 
 class ItemModalWindow(QDialog):
-    def __init__(self, args):
+    def __init__(self, arguments):
         super().__init__()
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+
         self.dialog_window = QDialog(self)
-        self.dialog_window.setStyleSheet('font-family: Courier;')
+        # self.dialog_window.setStyleSheet('font-family: Courier;')
         self.horizbox = QHBoxLayout()
         self.vertbox = QVBoxLayout()
 
-        self.item = {
-            'type': args[0],
-            'name': args[1],
-            'description': args[2],
-            'colors': args[3],
-            'image': args[4]
-        }
-
-        #                image              #
+        # image
         self.item_image = QLabel()
-        pixmap = QPixmap(self.scriptDir + '/img/' + str(self.item['image']))
+        pixmap = QPixmap(self.scriptDir + '/img/' + str(arguments['image']))
         self.item_image.setPixmap(pixmap)
 
-        #              description          #
+        # description
         self.description = QLabel()
         self.description.setWordWrap(True)
         self.description.setFixedSize(300, 360)
-        self.description.setText(self.item['description'])
+        self.description.setText(arguments['description'])
 
         #             button                #
         self.add_to_cart_button = QPushButton()
@@ -39,14 +32,12 @@ class ItemModalWindow(QDialog):
         #            dropdown lists        #
         self.color_combo = QComboBox()
         self.size_combo = QComboBox()
-        color_combo_opts = self.item['colors']
-        size_combo_opts = ['Small', 'Medium', 'Lagre', 'XLarge']
-        self.size_combo.addItems(size_combo_opts)
-        self.color_combo.addItems(color_combo_opts)
+        self.size_combo.addItems(['Small', 'Medium', 'Lagre', 'XLarge'])
+        self.color_combo.addItems(['Black', 'White', 'Yellow']) # temp
 
         self.connect(self.add_to_cart_button,
                      SIGNAL('clicked()'),
-                     lambda: self.add_to_cart())
+                     lambda: self.add_to_cart(arguments))
 
         #              placing             #
         self.horizbox.addWidget(self.item_image)
@@ -57,16 +48,18 @@ class ItemModalWindow(QDialog):
         self.vertbox.addWidget(self.add_to_cart_button)
         self.dialog_window.setLayout(self.horizbox)
         self.dialog_window.setFixedSize(850, 550)
-        self.dialog_window.setWindowTitle(self.item['name'])
+        self.dialog_window.setWindowTitle(arguments['name'])
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
 
 
-    def add_to_cart(self):
+    def add_to_cart(self, arguments):
         self.item_to_buy = {
-            'name': self.item['name'],
+            'name': arguments['name'],
             'color': str(self.color_combo.currentText()),
-            'size': str(self.size_combo.currentText())
+            'size': str(self.size_combo.currentText()),
+            'price': arguments['price'],
+            'image': arguments['image']
         }
 
         with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
