@@ -61,8 +61,8 @@ class Cart(QDialog):
             self.item_layout.addWidget(self.item_remove_button)
             self.item_layout.addWidget(self.item_price_label)
 
-            # pixmap = QPixmap(self.scriptDir + '/TempPNGS/' + item['image'] + '.png')
-            # self.item_image_label.setPixmap(pixmap)
+            pixmap = QPixmap(self.scriptDir + '/img/200px/' + item['image'])
+            self.item_image_label.setPixmap(pixmap)
             self.item_details_label.setText(item['name'] + '\nStyle: ' + item['color'] + '\nSize: ' + item['size'])
             self.item_remove_button.setText('Remove')
             self.item_price_label.setText('Price: ' + str(item['price']))

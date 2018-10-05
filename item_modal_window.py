@@ -16,7 +16,7 @@ class ItemModalWindow(QDialog):
 
         # image
         self.item_image = QLabel()
-        pixmap = QPixmap(self.scriptDir + '/img/' + str(arguments['image']))
+        pixmap = QPixmap(self.scriptDir + '/img/500px/' + str(arguments['image']))
         self.item_image.setPixmap(pixmap)
 
         # description
