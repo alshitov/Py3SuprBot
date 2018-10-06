@@ -37,7 +37,7 @@ class Cart(QDialog):
         self.subtotal_label.setAlignment(Qt.AlignHCenter)
 
         self.cart_window.setLayout(self.layout)
-        self.cart_window.setFixedSize(900, 550)
+        self.cart_window.setFixedSize(855, 550)
         self.cart_window.setWindowTitle("Cart")
         self.cart_window.setModal(True)
         self.cart_window.exec_()
@@ -67,8 +67,17 @@ class Cart(QDialog):
             self.item_remove_button.setText('Remove')
             self.item_price_label.setText('Price: ' + str(item['price']))
 
+            # sizing elements
+            self.item_details_label.setWordWrap(True)
+            self.item_details_label.setFixedWidth(350)
+            self.item_details_label.setAlignment(Qt.AlignVCenter)
+            self.item_details_label.setContentsMargins(15, 0, 15, 0)
+            self.item_remove_button.setFixedWidth(100)
+            self.item_price_label.setAlignment(Qt.AlignVCenter)
+            self.item_price_label.setContentsMargins(5, 0, 0, 0)
+            self.item_box.setFixedHeight(220)
+
             self.item_box.setLayout(self.item_layout)
-            self.item_box.setFixedHeight(200)
             self.items_list_layout.addWidget(self.item_box)
 
 

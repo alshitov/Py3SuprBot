@@ -11,7 +11,6 @@ def resize_images():
     images_list = sorted([file[:-4] for file in os.listdir(images_path)
                           if re.search('(.*?).jpg', file)], key=int)
 
-    print(images_list)
 
     for basewidth in sizes:
         for idx, img in enumerate(images_list):
@@ -24,7 +23,3 @@ def resize_images():
                 image.save(images_path + '200px/' + str(idx) + '.jpg')
             elif basewidth == 500:
                 image.save(images_path + '500px/' + str(idx) + '.jpg')
-
-
-if __name__ == '__main__':
-    resize_images()

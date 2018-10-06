@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from random import choice
 import json
+import resize
 
 
 class Parser():
@@ -137,7 +138,7 @@ class Parser():
                 curr_link = f.read().strip()
 
             # if latest link has been changed - that means new items has been dropped
-            if link_to_items == curr_link:
+            if link_to_items != curr_link:
                 # first, write down current link to local storage
                 with open('latest.txt', mode='w') as f:
                     f.write(link_to_items)
@@ -208,3 +209,7 @@ class Parser():
                     print("Success!")
             except requests.exceptions.ConnectionError:
                 print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))
+                self.download_images()
+
+        # when images downloaded, resize them and save copies
+        resize.resize_images()

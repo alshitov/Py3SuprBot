@@ -24,28 +24,56 @@ class ItemModalWindow(QDialog):
         self.description.setWordWrap(True)
         self.description.setFixedSize(300, 360)
         self.description.setText(arguments['description'])
+        self.description.setContentsMargins(10, 0, 0, 10)
 
-        #             button                #
+        # button
         self.add_to_cart_button = QPushButton()
         self.add_to_cart_button.setText("Add to Cart")
 
-        #            dropdown lists        #
-        self.color_combo = QComboBox()
+        # user choose labels
+        self.color_input = QLineEdit()
         self.size_combo = QComboBox()
+
+        # size combo items
         self.size_combo.addItems(['Small', 'Medium', 'Lagre', 'XLarge'])
-        self.color_combo.addItems(['Black', 'White', 'Yellow']) # temp
+
+        # color input settings
+        self.color_input.setPlaceholderText("Choose color (hover for help)")
+        color_re = QRegExp("[a-zA-Z \!,]+")
+        color_input_validator = QRegExpValidator(color_re, self.color_input)
+        self.color_input.setValidator(color_input_validator)
+
+        # self.color_input.setToolTip('''
+        # COLORS I FOUND RECENTLY:
+        # RED SHADES:
+        #     Red, Orange, Yellow, Burgundy, Magenta, Mustard, Pink, Lime, Gold, Cardinal, Brown
+        #
+        # GREEN SHADES:
+        #     Olive, Beige, Clay, Green, Green, Khaki, Green, Woodland Camo, Camo
+        #
+        # BLUE SHADES:
+        #     Navy, Cranberry, Maroon, Blue, Purple, Pink, Blue Denim, Royal, Violet, Plum, Panther, Slate, Cyan
+        #
+        # BLACK/WHITE SHADES:
+        #     Black, Grey, White, Off-White, Ash Grey, Heather Grey, Natural, Teal, Panther, Tan, Multicolor
+        #
+        # COMBINATIONS (+ Color): #### E.g. Dark Purple, Pink Polka Dot, Pale Red etc. ####
+        #     Dark, Light; (Color +) Polka Dot; Dusty; Rust; Bright; Fluorescent; Neon; Washed; Pale;
+        # ''')
 
         self.connect(self.add_to_cart_button,
                      SIGNAL('clicked()'),
                      lambda: self.add_to_cart(arguments))
 
-        #              placing             #
+        # placing
         self.horizbox.addWidget(self.item_image)
         self.horizbox.addLayout(self.vertbox)
         self.vertbox.addWidget(self.description)
-        self.vertbox.addWidget(self.color_combo)
+        self.vertbox.addWidget(self.color_input)
         self.vertbox.addWidget(self.size_combo)
         self.vertbox.addWidget(self.add_to_cart_button)
+        # self.vertbox.addWidget(self.question_label)
+
         self.dialog_window.setLayout(self.horizbox)
         self.dialog_window.setFixedSize(850, 550)
         self.dialog_window.setWindowTitle(arguments['name'])
@@ -56,7 +84,7 @@ class ItemModalWindow(QDialog):
     def add_to_cart(self, arguments):
         self.item_to_buy = {
             'name': arguments['name'],
-            'color': str(self.color_combo.currentText()),
+            'color': str(self.color_input.text()),
             'size': str(self.size_combo.currentText()),
             'price': arguments['price'],
             'image': arguments['image']

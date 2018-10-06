@@ -79,8 +79,7 @@ class BotHelpWindow(QDialog):
         # setting scroll area
         self.area = QWidget()
         self.area.setFixedWidth(680)
-        # self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
-        self.area.setFixedHeight(260)
+        self.area.setFixedHeight(200)
         self.area.setLayout(self.info_list_layout)
 
         self.scroll_area = QScrollArea()
@@ -126,8 +125,6 @@ class BotHelpWindow(QDialog):
         if label.isVisible():
             label.setVisible(False)
             self.area.setFixedHeight(self.area.height() - label.height())
-            print(self.area.height())
         else:
             label.setVisible(True)
             self.area.setFixedHeight(self.area.height() + label.height())
-            print(self.area.height())
