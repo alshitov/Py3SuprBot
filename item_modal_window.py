@@ -4,6 +4,8 @@ from PyQt4.QtCore import *
 import json
 
 
+#TODO: add help on choosing colors in bot_help
+
 class ItemModalWindow(QDialog):
     def __init__(self, arguments):
         super().__init__()
@@ -36,6 +38,7 @@ class ItemModalWindow(QDialog):
 
         # size combo items
         self.size_combo.addItems(['Small', 'Medium', 'Lagre', 'XLarge'])
+        self.size_combo.setToolTip('Use Sizing Help to check Supreme sizing on current droplist.')
 
         # color input settings
         self.color_input.setPlaceholderText("Choose color (hover for help)")
@@ -43,23 +46,23 @@ class ItemModalWindow(QDialog):
         color_input_validator = QRegExpValidator(color_re, self.color_input)
         self.color_input.setValidator(color_input_validator)
 
-        # self.color_input.setToolTip('''
-        # COLORS I FOUND RECENTLY:
-        # RED SHADES:
-        #     Red, Orange, Yellow, Burgundy, Magenta, Mustard, Pink, Lime, Gold, Cardinal, Brown
-        #
-        # GREEN SHADES:
-        #     Olive, Beige, Clay, Green, Green, Khaki, Green, Woodland Camo, Camo
-        #
-        # BLUE SHADES:
-        #     Navy, Cranberry, Maroon, Blue, Purple, Pink, Blue Denim, Royal, Violet, Plum, Panther, Slate, Cyan
-        #
-        # BLACK/WHITE SHADES:
-        #     Black, Grey, White, Off-White, Ash Grey, Heather Grey, Natural, Teal, Panther, Tan, Multicolor
-        #
-        # COMBINATIONS (+ Color): #### E.g. Dark Purple, Pink Polka Dot, Pale Red etc. ####
-        #     Dark, Light; (Color +) Polka Dot; Dusty; Rust; Bright; Fluorescent; Neon; Washed; Pale;
-        # ''')
+        self.color_input.setToolTip('''
+        COLORS I FOUND RECENTLY:
+        RED SHADES:
+            Red, Orange, Yellow, Burgundy, Magenta, Mustard, Pink, Lime, Gold, Cardinal, Brown
+
+        GREEN SHADES:
+            Olive, Beige, Clay, Green, Green, Khaki, Green, Woodland Camo, Camo
+
+        BLUE SHADES:
+            Navy, Cranberry, Maroon, Blue, Purple, Pink, Blue Denim, Royal, Violet, Plum, Panther, Slate, Cyan
+
+        BLACK/WHITE SHADES:
+            Black, Grey, White, Off-White, Ash Grey, Heather Grey, Natural, Teal, Panther, Tan, Multicolor
+
+        COMBINATIONS (+ Color): #### E.g. Dark Purple, Pink Polka Dot, Pale Red etc. ####
+            Dark, Light, Dusty, Rust, Bright, Fluorescent, Neon, Washed, Pale, (Color +) Polka Dot; 
+        ''')
 
         self.connect(self.add_to_cart_button,
                      SIGNAL('clicked()'),

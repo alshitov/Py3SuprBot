@@ -13,14 +13,30 @@ class BotHelpWindow(QDialog):
         self.info_list_layout.setAlignment(Qt.AlignTop)
 
         # creating buttons
-        self.info_button_1 = QPushButton("Info1")
-        self.info_button_2 = QPushButton("Info2")
+        self.info_button_1 = QPushButton("How to choose colors?")
+        self.info_button_2 = QPushButton("How to manage users?")
         self.info_button_3 = QPushButton("Info3")
         self.info_button_4 = QPushButton("Info4")
         self.info_button_5 = QPushButton("Info5")
 
-        # temp
-        self.info = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
+        # text infos
+        how_to_colors = '\n'.join(['When filling in "Choose color" field, you have the following options:\n' ,
+                                  'Color_1, Color_2, ... \t= Include(add) colors to list. Priority by index in list.',
+                                  '!Color \t\t\t= Exclude(forbid) particular color.',
+                                  'Any \t\t\t= Choose first available color.'])
+
+        how_to_users = '\n'.join(['When choosing/adding user:\n',
+                                  '1. Steps to define your billing information (only if you have not done it earlier):',
+                                  '    - fill in every field',
+                                  '    - press "Accept and Save"',
+                                  '    - your data will be written into json file named as Your_Name',
+                                  '2. Press "Cancel" to close window.',
+                                  '3. Choose your name from the saved users list and press "Load" to check if your billing information is correct.',
+                                  '    3.1. Make corrections and press "Accept And Save" if your have changed some piece of data.',
+                                  '           Information will be overwritten.',
+                                  '4. Choose your name from the saved users list and press "Delete" to remove your billing information.'])
+
+        self.info1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
                     "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim " \
                     "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea " \
                     "commodo consequat. Duis aute irure dolor in reprehenderit in voluptate " \
@@ -42,17 +58,17 @@ class BotHelpWindow(QDialog):
         self.info_label_5.setWordWrap(True)
 
         self.info_label_1.setFixedHeight(100)
-        self.info_label_2.setFixedHeight(100)
+        self.info_label_2.setFixedHeight(230)
         self.info_label_3.setFixedHeight(100)
         self.info_label_4.setFixedHeight(100)
         self.info_label_5.setFixedHeight(100)
 
-        # labels info - temp
-        self.info_label_1.setText(self.info)
-        self.info_label_2.setText(self.info)
-        self.info_label_3.setText(self.info)
-        self.info_label_4.setText(self.info)
-        self.info_label_5.setText(self.info)
+        # labels info
+        self.info_label_1.setText(how_to_colors)
+        self.info_label_2.setText(how_to_users)
+        self.info_label_3.setText(self.info1)
+        self.info_label_4.setText(self.info1)
+        self.info_label_5.setText(self.info1)
 
         # original labels state - non visible
         self.info_label_1.setVisible(False)
