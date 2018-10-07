@@ -88,7 +88,6 @@ class ItemModalWindow(QDialog):
         self.vertbox.addWidget(self.color_input)
         self.vertbox.addWidget(self.size_combo)
         self.vertbox.addWidget(self.add_to_cart_button)
-        # self.vertbox.addWidget(self.question_label)
 
         self.dialog_window.setLayout(self.horizbox)
         self.dialog_window.setFixedSize(850, 550)

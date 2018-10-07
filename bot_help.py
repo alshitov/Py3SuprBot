@@ -16,14 +16,15 @@ class BotHelpWindow(QDialog):
         self.info_button_1 = QPushButton("How to choose colors?")
         self.info_button_2 = QPushButton("How to choose sizings?")
         self.info_button_3 = QPushButton("How to manage users?")
-        self.info_button_4 = QPushButton("Info4")
+        self.info_button_4 = QPushButton("Work with cart")
         self.info_button_5 = QPushButton("Info5")
 
         # text infos
         how_to_colors = '\n'.join(['When filling in "Choose color" field, you have the following options:\n' ,
                                   'Color_1, Color_2, ... \t= Include(add) colors to list. Priority by index in list.',
                                   '!Color \t\t\t= Exclude(forbid) particular color.',
-                                  'Any \t\t\t= Choose first available color.'])
+                                  'Any \t\t\t= Choose first available color.'
+                                   ])
 
         how_to_users = '\n'.join(['When choosing/adding user:\n',
                                   '1. Steps to define your billing information (only if you have not done it earlier):',
@@ -34,7 +35,8 @@ class BotHelpWindow(QDialog):
                                   '3. Choose your name from the saved users list and press "Load" to check if your billing information is correct.',
                                   '    3.1. Make corrections and press "Accept And Save" if your have changed some piece of data.',
                                   '           Information will be overwritten.',
-                                  '4. Choose your name from the saved users list and press "Delete" to remove your billing information.'])
+                                  '4. Choose your name from the saved users list and press "Delete" to remove your billing information.'
+                                  ])
 
         how_to_sizes = '\n'.join(['First, go to Sizing Help and examine individual Supreme sizings on item you are interested in.',
                                   '\nWhen filling in "Choose size" field, you have the following options same as "Choose color" options:\n',
@@ -42,6 +44,10 @@ class BotHelpWindow(QDialog):
                                   '!Size \t\t\t= Exclude(forbid) particular size.',
                                   'Any \t\t\t= Choose first available size.'
                                   ])
+
+        how_to_cart = '\n'.join(['1. Press "Delete" button to delete item from basket.',
+                                 '2. Specify items priority by choosing the corresponding index in dropdown list next to price label. '
+                                 'Then click "Remember Choice" to remember priorities.'])
 
         self.info1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
                     "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim " \
@@ -67,14 +73,14 @@ class BotHelpWindow(QDialog):
         self.info_label_1.setFixedHeight(100)
         self.info_label_2.setFixedHeight(180)
         self.info_label_3.setFixedHeight(260)
-        self.info_label_4.setFixedHeight(100)
+        self.info_label_4.setFixedHeight(80)
         self.info_label_5.setFixedHeight(100)
 
         # labels info
         self.info_label_1.setText(how_to_colors)
         self.info_label_2.setText(how_to_sizes)
         self.info_label_3.setText(how_to_users)
-        self.info_label_4.setText(self.info1)
+        self.info_label_4.setText(how_to_cart)
         self.info_label_5.setText(self.info1)
 
         # original labels state - non visible

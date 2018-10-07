@@ -29,7 +29,7 @@ class SupremeApp(QWidget):
                      SIGNAL('clicked()'),
                      lambda: self.create_cart_window())
 
-        self.sizing_btn = QPushButton('Sizing', self)
+        self.sizing_btn = QPushButton('Sizing Help', self)
         self.connect(self.sizing_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_sizing_help_window())
