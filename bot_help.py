@@ -9,13 +9,13 @@ class BotHelpWindow(QDialog):
         self.layout = QVBoxLayout()
 
         self.info_list_layout = QVBoxLayout()
-        self.info_list_layout.setContentsMargins(5, 5, 5, 5)
+        self.info_list_layout.setContentsMargins(10, 5, 5, 5)
         self.info_list_layout.setAlignment(Qt.AlignTop)
 
         # creating buttons
         self.info_button_1 = QPushButton("How to choose colors?")
-        self.info_button_2 = QPushButton("How to manage users?")
-        self.info_button_3 = QPushButton("Info3")
+        self.info_button_2 = QPushButton("How to choose sizings?")
+        self.info_button_3 = QPushButton("How to manage users?")
         self.info_button_4 = QPushButton("Info4")
         self.info_button_5 = QPushButton("Info5")
 
@@ -35,6 +35,13 @@ class BotHelpWindow(QDialog):
                                   '    3.1. Make corrections and press "Accept And Save" if your have changed some piece of data.',
                                   '           Information will be overwritten.',
                                   '4. Choose your name from the saved users list and press "Delete" to remove your billing information.'])
+
+        how_to_sizes = '\n'.join(['First, go to Sizing Help and examine individual Supreme sizings on item you are interested in.',
+                                  '\nWhen filling in "Choose size" field, you have the following options same as "Choose color" options:\n',
+                                  'Size_1, Size_2, ... \t\t= Include(add) sizes to list. Priority by index in list.',
+                                  '!Size \t\t\t= Exclude(forbid) particular size.',
+                                  'Any \t\t\t= Choose first available size.'
+                                  ])
 
         self.info1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
                     "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim " \
@@ -58,15 +65,15 @@ class BotHelpWindow(QDialog):
         self.info_label_5.setWordWrap(True)
 
         self.info_label_1.setFixedHeight(100)
-        self.info_label_2.setFixedHeight(230)
-        self.info_label_3.setFixedHeight(100)
+        self.info_label_2.setFixedHeight(180)
+        self.info_label_3.setFixedHeight(260)
         self.info_label_4.setFixedHeight(100)
         self.info_label_5.setFixedHeight(100)
 
         # labels info
         self.info_label_1.setText(how_to_colors)
-        self.info_label_2.setText(how_to_users)
-        self.info_label_3.setText(self.info1)
+        self.info_label_2.setText(how_to_sizes)
+        self.info_label_3.setText(how_to_users)
         self.info_label_4.setText(self.info1)
         self.info_label_5.setText(self.info1)
 
@@ -107,7 +114,7 @@ class BotHelpWindow(QDialog):
 
         # window settings
         self.bot_help_window.setLayout(self.layout)
-        self.bot_help_window.setFixedSize(720, 450)
+        self.bot_help_window.setFixedSize(730, 450)
         self.bot_help_window.setWindowTitle("Bot Help")
         self.bot_help_window.setModal(True)
         self.bot_help_window.exec_()

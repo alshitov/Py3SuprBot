@@ -5,6 +5,8 @@ import json
 import re
 
 
+#TODO: create items priority!!!
+
 class Cart(QDialog):
     def __init__(self):
         super().__init__()
