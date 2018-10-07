@@ -1,7 +1,9 @@
 import os
 from selenium.common.exceptions import *
 from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 import json
 import time
 import requests
@@ -64,48 +66,86 @@ def main():
         # if detect_drop(link):
         shop_list = browser.find_elements_by_css_selector('a.name-link')
         for index, element in enumerate(shop_list):
-            # add wait for staleness_of
-            if shop_list[index].text == item['name'] and shop_list[index+1].text == item['color']:
-                # go to item page
-                browser.get(element.get_attribute('href'))
+            try:
+                if shop_list[index].text == item['name'] and shop_list[index+1].text == item['color']:
+                    # go to item page
+                    browser.get(element.get_attribute('href'))
 
-                # size choice
-                size_select = browser.find_element_by_css_selector('select#size')
-                size_select.send_keys(item['size'])
+                    # size choice
+                    size_select = browser.find_element_by_css_selector('select#size')
+                    size_select.send_keys(item['size'])
 
-                # add to basket button
-                add_to_basket = browser.find_element_by_name('commit')
-                add_to_basket.click()
+                    # add to basket button
+                    add_to_basket = browser.find_element_by_name('commit')
+                    add_to_basket.click()
 
-                # wait for 'checkout now' button to appear
-                # add element_to_be_clickable — it is Displayed and Enabled.
+                    # wait for 'checkout now' button to appear
+                    checkout_now = WebDriverWait(browser, 3).until(
+                        EC.visibility_of_element_located((By.CSS_SELECTOR, 'a.checkout')))
 
-                # go to checkout page
-                checkout_now = browser.find_element_by_css_selector('a.checkout')
-                checkout_now.click()
+                    # go to checkout page
+                    checkout_now.click()
 
-                # frame_element = WebDriverWait(browser, 120).until(EC.visibility_of_element_located((By.name, ""))
+                    # finding billing info fields and sending billing info keys
+                    name_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_name"]')))
+                    name_input.send_keys(user['name'])
 
-                # finding billing info fields and sending billing info keys
-                print(browser.find_element_by_css_selector('input#order_billing_name').text)
-                # browser.find_element_by_css_selector('input#order_billing_name').send_keys(user['name'])
-                # browser.find_element_by_css_selector('input#order_email').send_keys(user['email'])
-                # browser.find_element_by_css_selector('input#order_tel').send_keys(user['tel'])
-                # browser.find_element_by_css_selector('input#bo').send_keys(user['address'])
-                # browser.find_element_by_css_selector('input#oba3').send_keys(user['address2'])
-                # browser.find_element_by_css_selector('input#order_billing_address_3').send_keys(user['address3'])
-                # browser.find_element_by_css_selector('input#order_billing_city').send_keys(user['city'])
-                # browser.find_element_by_css_selector('input#order_billing_zip').send_keys(user['postcode'])
-                # browser.find_element_by_css_selector('select#order_billing_country').send_keys(user['country'])
-                # browser.find_element_by_css_selector('select#credit_card_type').send_keys(user['card_type'])
-                # browser.find_element_by_css_selector('input#cnb').send_keys(user['card_number'])
-                # browser.find_element_by_css_selector('select#credit_card_month').send_keys(user['card_month'])
-                # browser.find_element_by_css_selector('select#credit_card_year').send_keys(user['card_year'])
-                # browser.find_element_by_css_selector('input#vval').send_keys(user['card_cvv'])
+                    email_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="order_email"]')))
+                    email_input.send_keys(user['email'])
 
-                # process payment
-                # process_payment = browser.find_element_by_css_selector('input.checkout')
-                # process_payment.click()
+                    tel_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="order_tel"]')))
+                    tel_input.send_keys(user['tel'])
+
+                    address_input= WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="bo"]')))
+                    address_input.send_keys(user['address'])
+
+                    address2_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="oba3"]')))
+                    address2_input.send_keys(user['address2'])
+
+                    address3_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_address_3"]')))
+                    address3_input.send_keys(user['address3'])
+
+                    city_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_city"]')))
+                    city_input.send_keys(user['city'])
+
+                    zip_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_zip"]')))
+                    zip_input.send_keys(user['postcode'])
+
+                    browser.find_element_by_xpath('//*[@id="order_billing_country"]').send_keys(user['country'])
+                    browser.find_element_by_xpath('//*[@id="credit_card_type"]').send_keys(user['card_type'])
+
+                    card_n_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="cnb"]')))
+                    card_n_input.send_keys(user['card_number'])
+
+                    browser.find_element_by_xpath('//*[@id="credit_card_month"]').send_keys(user['card_month'])
+                    browser.find_element_by_xpath('//*[@id="credit_card_year"]').send_keys(user['card_year'])
+
+                    card_cvv_input = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//*[@id="vval"]')))
+                    card_cvv_input.send_keys(user['card_cvv'])
+
+                    # process payment
+
+                    # confirmation
+                    browser.find_element_by_xpath(
+                        '/html/body/div[2]/div[1]/form/div[2]/div[2]/fieldset/p/label/div/ins').click()
+
+                    process_payment = browser.find_element_by_css_selector('input.checkout')
+                    process_payment.click()
+                    time.sleep(10)
+
+
+            except StaleElementReferenceException:
+                pass
 
 if __name__ == '__main__':
     main()
