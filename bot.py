@@ -3,12 +3,100 @@ import os
 import requests
 import json
 import time
+from re import search
 
 from requests.utils import dict_from_cookiejar
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+
+
+class BotWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+        self.bot_window = QDialog(self)
+        self.vert_layout = QVBoxLayout()
+        self.horiz_layout = QHBoxLayout()
+
+        self.info_label_check_items = QLabel('<b>Check your buy list:</b>')
+        self.info_label_choose_user = QLabel('<b>Choose user:</b>')
+        self.info_label_choose_time = QLabel('<b>Choose drop time(GMT):</b>')
+
+        self.check_items_label = QLabel()
+        self.choose_user_combobox = QComboBox()
+        self.choose_time_label = QTimeEdit()
+        self.cancel_button = QPushButton('Cancel')
+        self.process_button = QPushButton('Process')
+
+        self.vert_layout.addWidget(self.info_label_check_items)
+        self.vert_layout.addWidget(self.check_items_label)
+        self.vert_layout.addWidget(self.info_label_choose_user)
+        self.vert_layout.addWidget(self.choose_user_combobox)
+        self.vert_layout.addWidget(self.info_label_choose_time)
+        self.vert_layout.addWidget(self.choose_time_label)
+        self.vert_layout.addLayout(self.horiz_layout)
+        self.horiz_layout.addWidget(self.cancel_button)
+        self.horiz_layout.addWidget(self.process_button)
+
+        self.check_items_label.setAlignment(Qt.AlignTop)
+
+        self.load_buy_list()
+        self.load_users_list()
+        self.connect_buttons()
+
+        self.bot_window.setLayout(self.vert_layout)
+        self.bot_window.setFixedSize(640, 360)
+        self.bot_window.setWindowTitle('Check Bot Settings')
+        self.bot_window.setModal(True)
+        self.bot_window.exec_()
+
+
+    def connect_buttons(self):
+        self.connect(self.cancel_button,
+                     SIGNAL('clicked()'),
+                     self.bot_window.close)
+
+        self.connect(self.process_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.process_payment())
+
+
+    def load_buy_list(self):
+        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+            items = json.load(fout)
+
+        if len(items) == 0:
+            self.check_items_label.setText('You have not chosen any products yet!')
+
+        else:
+            text = ''
+            for index, item in enumerate(items):
+                text += str(index + 1) + '. ' \
+                        + item['name'] + ' / ' \
+                        + item['color'] + ' / ' \
+                        + item['size'] + '\n'
+
+            self.check_items_label.setText(text)
+
+
+    def load_users_list(self):
+        files = os.listdir(self.scriptDir)
+        users = [file[5:-5]
+                 for file in files if search('user_(.*?).json', file)]
+        self.choose_user_combobox.addItems(users)
+
+
+    def process_payment(self):
+        # here to collect user and time
+        # and process them to bot init
+        bot_ = Bot()
+        bot_.find_items()
+
 
 
 class Bot():
@@ -47,6 +135,7 @@ class Bot():
 
     def get_item_info(self, id):
         return requests.request('GET', 'http://www.supremenewyork.com/shop/{}.json'.format(id), headers=self.headers).json()
+
 
     def checkout(self):
         self.driver.get('https://www.supremenewyork.com/checkout')
@@ -207,11 +296,3 @@ class Bot():
                     break
                 else: # if no item name match found
                     print('Not found. Refreshing...') # wait for several secs, thus not to get banned maybe?
-
-
-def main():
-    bot_ = Bot()
-    bot_.find_items()
-
-if __name__ == '__main__':
-    main()

@@ -9,6 +9,7 @@ from sizing_window import SizingHelpModalWindow
 from cart import Cart
 from parser import Parser
 from bot_help import BotHelpWindow
+from bot import BotWindow
 
 
 class SupremeApp(QWidget):
@@ -40,6 +41,9 @@ class SupremeApp(QWidget):
                      lambda: self.create_bot_help_window())
 
         self.start_btn = QPushButton('Start Bot', self)
+        self.connect(self.start_btn,
+                     SIGNAL('clicked()'),
+                     lambda: self.start_bot())
 
         horizbox.addWidget(self.init_user_btn)
         horizbox.addWidget(self.cart_btn)
@@ -85,19 +89,23 @@ class SupremeApp(QWidget):
 
 
     def create_user_info_modal_window(self):
-        window_modal = UserInfoModalWindow()
+        user_window = UserInfoModalWindow()
 
 
     def create_sizing_help_window(self):
-        window_modal = SizingHelpModalWindow()
+        sizing_window = SizingHelpModalWindow()
 
 
     def create_cart_window(self):
-        window_modal = Cart()
+        cart_window = Cart()
 
 
     def create_bot_help_window(self):
-        window_modal = BotHelpWindow()
+        help_window = BotHelpWindow()
+
+
+    def start_bot(self):
+        bot_window = BotWindow()
 
 
     def create_table(self):
