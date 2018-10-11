@@ -44,6 +44,13 @@ class BotHelpWindow(QDialog):
                                   '!Size \t\t\t= Exclude(forbid) particular size.',
                                   'Any \t\t\t= Choose first available size.'
                                   ])
+        # pref_sizes
+        # Any - bot selects first size in a list (which is actually the smallest available one)
+        # Small - particular
+        # Medium - particular
+        # Large - particular
+        # XLarge - particular
+        # Biggest - bot selects the biggest available size in a list
 
         how_to_cart = '\n'.join(['1. Press "Delete" button to delete item from basket.',
                                  '2. Specify items priority by choosing the corresponding index in dropdown list next to price label. '

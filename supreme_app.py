@@ -62,9 +62,9 @@ class SupremeApp(QWidget):
         vertbox.addLayout(horizbox)
 
         #           main window           #
-        self.setGeometry(2500, 100, 1186, 875)
+        self.setGeometry(2500, 100, 0, 0)
         self.setLayout(vertbox)
-        self.setFixedWidth(1186)
+        self.setFixedSize(1200, 675)
         self.setWindowTitle('Py3SuprBot')
 
         self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'logo.png'))
@@ -109,7 +109,7 @@ class SupremeApp(QWidget):
         # if links differ, it parses droplist from community and saves it to json dump
         # also it writes down last used link to 'latest.txt'
 
-        # parser_.parse_main_window_content()
+        parser_.parse_main_window_content()
 
         # reading content from dump
         with open('current_drop.json', mode='r') as fin:
@@ -123,6 +123,7 @@ class SupremeApp(QWidget):
         column = 0
 
         for index, item in enumerate(self.drop):
+            # btn = QPushButton(item['name'])
             btn = QPushButton()
             btn.setIcon(QIcon('img/' + str(index)))
             btn.setIconSize(QSize(200, 200))

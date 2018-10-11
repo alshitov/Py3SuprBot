@@ -4,6 +4,8 @@ from PyQt4.QtCore import *
 import json
 
 
+#TODO: disable "Add to cart" button if size label is empty
+
 class ItemModalWindow(QDialog):
     def __init__(self, arguments):
         super().__init__()
