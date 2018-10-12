@@ -117,6 +117,7 @@ class SupremeApp(QWidget):
         # if links differ, it parses droplist from community and saves it to json dump
         # also it writes down last used link to 'latest.txt'
 
+        print('Checking for drop updates. Please, be patient!')
         parser_.parse_main_window_content()
 
         # reading content from dump

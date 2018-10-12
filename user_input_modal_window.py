@@ -10,7 +10,6 @@ class UserInfoModalWindow(QDialog):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         super().__init__()
         self.dialog_window = QDialog(self)
-        self.dialog_window.setStyleSheet('font-family: Courier;')
         self.grid = QGridLayout()
 
         #           user input fields            #
@@ -82,10 +81,6 @@ class UserInfoModalWindow(QDialog):
         self.save_button.setText('Accept And Save')
         self.load_user_button.setText('Load')
         self.delete_user_button.setText('Delete')
-        self.delete_user_icon = QIcon(self.scriptDir + '/delete.png')
-        self.delete_user_icon_size = QSize(20, 20)
-        self.delete_user_button.setIcon(self.delete_user_icon)
-        self.delete_user_button.setIconSize(self.delete_user_icon_size)
 
         #           setting validators           #
         self.onlyInt = QIntValidator()

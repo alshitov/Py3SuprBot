@@ -182,8 +182,8 @@ class Parser():
 
             else: print("Items already up to date!")
 
-        except requests.exceptions.ConnectionError:
-            print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))
+        except requests.exceptions.ProxyError:
+            print('Connection: proxy is down... Trying next...')
             # if error occurred, try parsing once again until success
             self.parse_main_window_content()
 
@@ -208,7 +208,7 @@ class Parser():
                     f.write(req.content)
                     print("Success!")
             except requests.exceptions.ConnectionError:
-                print('Error! SSL: {}, HTTP: {}'.format(self.proxies['https'], self.proxies['http']))
+                print('Proxy is down... Trying next...')
                 self.download_images()
 
         # when images downloaded, resize them and save copies

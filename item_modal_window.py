@@ -12,7 +12,6 @@ class ItemModalWindow(QDialog):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
 
         self.dialog_window = QDialog(self)
-        # self.dialog_window.setStyleSheet('font-family: Courier;')
         self.horizbox = QHBoxLayout()
         self.vertbox = QVBoxLayout()
 
@@ -44,7 +43,7 @@ class ItemModalWindow(QDialog):
                                       'US 10 / UK 9', 'US 10.5 / UK 9.5',
                                       'US 11 / UK 10', 'US 11.5 / UK 10.5',
                                       'US 12 / UK 11', 'US 13 / UK 12'])
-        elif arguments['type'] == 'hats' or arguments['type'] == 'bags':
+        elif arguments['type'] == 'hats' or arguments['type'] == 'bags' or arguments['type'] == 'accessories':
             self.size_combo.setVisible(False)
         elif arguments['type'] == 'pants':
             self.size_combo.addItems(['30', '32','34', '36'])
