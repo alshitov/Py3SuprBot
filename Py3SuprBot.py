@@ -20,13 +20,13 @@ class MySplashScreen(QSplashScreen):
         self.setMask(pixmap.mask())
 
 def longInitialization(arg):
+    import time
     time.sleep(0.1)
     return 0
 
 if __name__ == "__main__":
-    import sys, time
     app = QApplication(sys.argv)
-    splash = MySplashScreen('ims/logo.png', Qt.WindowStaysOnTopHint)
+    splash = MySplashScreen('img/logo.png', Qt.WindowStaysOnTopHint)
     splash.show()
     app.processEvents()
     initLoop = QEventLoop()

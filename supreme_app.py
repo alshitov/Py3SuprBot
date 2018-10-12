@@ -66,9 +66,9 @@ class SupremeApp(QWidget):
         vertbox.addLayout(horizbox)
 
         #           main window           #
-        self.setGeometry(2500, 100, 0, 0)
+        self.setGeometry(2500, 100, 0, 675)
         self.setLayout(vertbox)
-        self.setFixedSize(1200, 675)
+        self.setFixedWidth(1200)
         self.setWindowTitle('Py3SuprBot')
 
         self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'logo.png'))
