@@ -195,14 +195,14 @@ class UserInfoModalWindow(QDialog):
         if any(user[field] == '' for field in user):
             print('Input Error!')
         else:
-            dump_name = 'user_' + '_'.join(user['name'].split(' ')) + '.json'
+            dump_name = 'json/user_' + '_'.join(user['name'].split(' ')) + '.json'
             with open(dump_name, mode='w', encoding='utf-8') as f:
                 json.dump(user, f)
             self.dialog_window.close()
 
 
     def load_users_list(self):
-        files = os.listdir(self.scriptDir)
+        files = os.listdir(self.scriptDir + '/json/')
         users = [file[5:-5]
                  for file in files if re.search('user_(.*?).json', file)]
         self.users_list_combo.addItems(users)
@@ -211,7 +211,7 @@ class UserInfoModalWindow(QDialog):
     def insert_user_info(self):
         user = self.users_list_combo.currentText()
         try:
-            with open('user_' + user + '.json', mode='r') as fout:
+            with open('json/user_' + user + '.json', mode='r') as fout:
                 user_data = json.load(fout)
                 self.name_input.setText(user_data['name'])
                 self.email_input.setText(user_data['email'])
@@ -234,7 +234,7 @@ class UserInfoModalWindow(QDialog):
     def delete_user(self):
         user = self.users_list_combo.currentText()
         try:
-            os.remove(self.scriptDir + '/user_' + user + '.json')
+            os.remove(self.scriptDir + '/json/user_' + user + '.json')
             print("User", user, "deleted!")
             all_items = [self.users_list_combo.itemText(i) for i in range(self.users_list_combo.count())]
             self.users_list_combo.removeItem(all_items.index(user))
@@ -256,3 +256,4 @@ class UserInfoModalWindow(QDialog):
             self.card_cvv_input.clear()
         except FileNotFoundError:
             print("No user selected!")
+            self.accept_dialog.close()

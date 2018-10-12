@@ -85,7 +85,7 @@ class BotWindow(QDialog):
 
 
     def load_users_list(self):
-        files = os.listdir(self.scriptDir)
+        files = os.listdir(self.scriptDir + '/json/')
         users = [file[5:-5]
                  for file in files if search('user_(.*?).json', file)]
         self.choose_user_combobox.addItems(users)
