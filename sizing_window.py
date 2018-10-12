@@ -37,7 +37,7 @@ class SizingHelpModalWindow(QDialog):
         self.current_season_label.setAlignment(Qt.AlignHCenter)
 
         #          widget contents      #
-        pixmap = QPixmap('logo.png')
+        pixmap = QPixmap('img/logo.png')
         self.logo_label.setPixmap(pixmap)
 
         self.dialog_window.setLayout(self.layout)

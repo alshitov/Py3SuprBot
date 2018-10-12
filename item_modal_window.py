@@ -107,10 +107,10 @@ class ItemModalWindow(QDialog):
             'image': arguments['image']
         }
 
-        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+        with open("json/items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items = json.load(fout)
 
-        with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
+        with open("json/items_to_buy.json", mode='w', encoding='utf-8') as fin:
             items.append(self.item_to_buy)
             json.dump(items, fin, ensure_ascii=False)
 

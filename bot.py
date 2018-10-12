@@ -67,7 +67,7 @@ class BotWindow(QDialog):
 
 
     def load_buy_list(self):
-        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+        with open("json/items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items = json.load(fout)
 
         if len(items) == 0:
@@ -117,14 +117,14 @@ class Bot():
 
     # получаем информацию о пользователе из файла
     def get_user_billing_info(self, filename):
-        with open('user_Alexander_Shitov.json', mode='r') as fout:
+        with open(filename, mode='r') as fout:
             user = json.load(fout)
         return user
 
 
     # получаем список вещей на покупку из файла
     def get_buy_list(self):
-        with open('items_to_buy.json', mode='r') as fout:
+        with open('json/items_to_buy.json', mode='r') as fout:
             return json.load(fout)
 
 
@@ -143,6 +143,7 @@ class Bot():
         print(self.driver.get_cookies())
 
         user = self.get_user_billing_info('something')
+
         name_input = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_name"]')))
         name_input.send_keys(user['name'])

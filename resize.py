@@ -6,7 +6,7 @@ import re
 
 def resize_images():
     sizes = [200, 500]
-    images_path = os.path.dirname(os.path.realpath(__file__)) + '/img/'
+    images_path = os.path.dirname(os.path.realpath(__file__)) + '/img/main/'
 
     images_list = sorted([file[:-4] for file in os.listdir(images_path)
                           if re.search('(.*?).jpg', file)], key=int)
@@ -20,6 +20,6 @@ def resize_images():
             image = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
 
             if basewidth == 200:
-                image.save(images_path + '200px/' + str(idx) + '.jpg')
+                image.save(images_path + '../200px/' + str(idx) + '.jpg')
             elif basewidth == 500:
-                image.save(images_path + '500px/' + str(idx) + '.jpg')
+                image.save(images_path + '../500px/' + str(idx) + '.jpg')

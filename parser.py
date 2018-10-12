@@ -32,7 +32,7 @@ class Parser():
                 proxy = 'http://' + str(tds[0]) + ':' + str(tds[1])
                 self.http_proxies.append(proxy)
 
-        with open('http_proxies.txt', mode='w', encoding='utf-8') as fin:
+        with open('txt/http_proxies.txt', mode='w', encoding='utf-8') as fin:
             fin.write('\n'.join(self.http_proxies))
 
 
@@ -52,7 +52,7 @@ class Parser():
                 proxy = 'http://' + str(tds[0]) + ':' + str(tds[1])
                 self.https_proxies.append(proxy)
 
-        with open('https_proxies.txt', mode='w', encoding='utf-8') as fin:
+        with open('txt/https_proxies.txt', mode='w', encoding='utf-8') as fin:
             fin.write('\n'.join(self.https_proxies))
 
 
@@ -98,9 +98,9 @@ class Parser():
         # target url
         url = 'https://www.supremecommunity.com'
         # reading (already refreshed) proxies and user-agents for request
-        self.agents_list = open('useragents.txt').read().split('\n')
-        self.http_proxies = open('http_proxies.txt').read().split('\n')
-        self.https_proxies = open('https_proxies.txt').read().split('\n')
+        self.agents_list = open('txt/useragents.txt').read().split('\n')
+        self.http_proxies = open('txt/http_proxies.txt').read().split('\n')
+        self.https_proxies = open('txt/https_proxies.txt').read().split('\n')
         # setting up proxy dict
         self.proxies = {
             'http': choice(self.http_proxies),
@@ -134,13 +134,13 @@ class Parser():
             link_to_items = url + latest
 
             # reading last saved link from local storage
-            with open('latest.txt', mode='r') as f:
+            with open('txt/latest.txt', mode='r') as f:
                 curr_link = f.read().strip()
 
             # if latest link has been changed - that means new items has been dropped
             if link_to_items != curr_link:
                 # first, write down current link to local storage
-                with open('latest.txt', mode='w') as f:
+                with open('txt/latest.txt', mode='w') as f:
                     f.write(link_to_items)
 
                 # get to latest(future) froplist
@@ -175,7 +175,7 @@ class Parser():
                     link_to_item_image = url + str(img.get('src'))
                     self.links.append(link_to_item_image)
 
-                with open('current_drop.json', 'w') as fin:
+                with open('json/current_drop.json', 'w') as fin:
                     json.dump(self.drop, fin, ensure_ascii=False)
 
                 self.download_images()
@@ -190,7 +190,7 @@ class Parser():
 
     def download_images(self):
         # reading list from dump
-        with open('current_drop.json', 'r') as fin:
+        with open('json/current_drop.json', 'r') as fin:
             droplist = json.load(fin)
 
         # changing proxies
@@ -204,7 +204,7 @@ class Parser():
             try:
                 print("Downloading image: ", str(index) , ".jpg...")
                 req = requests.get(url, headers=self.headers, proxies=self.proxies)
-                with open(self.scriptDir + '/img/{}.jpg'.format(str(index)), mode='wb') as f:
+                with open(self.scriptDir + '/img/main/{}.jpg'.format(str(index)), mode='wb') as f:
                     f.write(req.content)
                     print("Success!")
             except requests.exceptions.ConnectionError:

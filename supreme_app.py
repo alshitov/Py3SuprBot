@@ -77,14 +77,6 @@ class SupremeApp(QWidget):
 
 
     def create_item_modal_window(self, args):
-        #        initializing cart json      #
-        if os.path.isfile(self.scriptDir + "/items_to_buy.json"):
-            pass
-        else:
-            os.system("touch items_to_buy.json")
-            with open("items_to_buy.json", mode='r', encoding='utf-8') as f:
-                json.dump('[]', f)
-
         window_modal = ItemModalWindow(args)
 
 
@@ -121,11 +113,8 @@ class SupremeApp(QWidget):
         parser_.parse_main_window_content()
 
         # reading content from dump
-        with open('current_drop.json', mode='r') as fin:
+        with open('json/current_drop.json', mode='r') as fin:
             self.drop = json.load(fin)
-
-        # path where to find images for main window mesh
-        images_path = self.scriptDir + '/img'
 
         # building table
         row = 0
@@ -134,7 +123,7 @@ class SupremeApp(QWidget):
         for index, item in enumerate(self.drop):
             # btn = QPushButton(item['name'])
             btn = QPushButton()
-            btn.setIcon(QIcon('img/' + str(index)))
+            btn.setIcon(QIcon('img/main/' + str(index)))
             btn.setIconSize(QSize(200, 200))
 
             self.field_layout.addWidget(btn, row, column)

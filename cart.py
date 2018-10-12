@@ -54,7 +54,7 @@ class Cart(QDialog):
 
 
     def build_table(self):
-        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+        with open("json/items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items = json.load(fout)
 
         for item in items:
@@ -99,7 +99,7 @@ class Cart(QDialog):
 
 
     def cart_counter(self):
-        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+        with open("json/items_to_buy.json", mode='r', encoding='utf-8') as fout:
             items_to_buy = json.load(fout)
 
             self.count_label.setText('{} items in your basket.'.format(len(items_to_buy)))
@@ -125,7 +125,7 @@ class Cart(QDialog):
 
     def remove_item(self, btn):
         btn.parent().deleteLater()
-        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+        with open("json/items_to_buy.json", mode='r', encoding='utf-8') as fout:
             feeds = json.load(fout)
 
         item = btn.parent().children()[2].text().split('\n')
@@ -137,14 +137,14 @@ class Cart(QDialog):
                 feeds.remove(feed)
             else: continue
 
-        with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
+        with open("json/items_to_buy.json", mode='w', encoding='utf-8') as fin:
             json.dump(feeds, fin, ensure_ascii=False)
 
         self.cart_counter()
 
 
     def remember_choice(self):
-        with open("items_to_buy.json", mode='r', encoding='utf-8') as fout:
+        with open("json/items_to_buy.json", mode='r', encoding='utf-8') as fout:
             feeds = json.load(fout)
 
         priority_combos = [self.items_list_layout.itemAt(index).widget().children()[5]
@@ -153,7 +153,7 @@ class Cart(QDialog):
         for index, feed in enumerate(feeds):
             feed['priority'] = priority_combos[index].currentText()
 
-        with open("items_to_buy.json", mode='w', encoding='utf-8') as fin:
+        with open("json/items_to_buy.json", mode='w', encoding='utf-8') as fin:
             json.dump(feeds, fin, ensure_ascii=False)
 
         self.cart_window.close()
