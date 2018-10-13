@@ -33,6 +33,11 @@ class BotWindow(QDialog):
         self.cancel_button = QPushButton('Cancel')
         self.process_button = QPushButton('Process')
 
+        self.logo_label = QLabel()
+        self.logo_label.setAlignment(Qt.AlignHCenter)
+        self.logo_label.setPixmap(QPixmap(self.scriptDir + '/img/logos/checkout.png'))
+        self.vert_layout.addWidget(self.logo_label)
+
         self.vert_layout.addWidget(self.info_label_check_items)
         self.vert_layout.addWidget(self.check_items_label)
         self.vert_layout.addWidget(self.info_label_choose_user)

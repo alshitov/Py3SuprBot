@@ -10,7 +10,16 @@ class UserInfoModalWindow(QDialog):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         super().__init__()
         self.dialog_window = QDialog(self)
+        self.layout = QVBoxLayout()
+
+        self.logo_label = QLabel()
+        self.logo_label.setAlignment(Qt.AlignHCenter)
+        self.logo_label.setPixmap(QPixmap(self.scriptDir + '/img/logos/billing.png'))
+        self.layout.addWidget(self.logo_label)
+
         self.grid = QGridLayout()
+        self.layout.addLayout(self.grid)
+
 
         #           user input fields            #
         self.name_input = QLineEdit()
@@ -125,7 +134,7 @@ class UserInfoModalWindow(QDialog):
 
         self.load_users_list()
 
-        self.dialog_window.setLayout(self.grid)
+        self.dialog_window.setLayout(self.layout)
         self.dialog_window.setFixedSize(656, 369)
         self.dialog_window.setWindowTitle("User billing information")
         self.dialog_window.setModal(True)

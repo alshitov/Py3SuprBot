@@ -1,3 +1,4 @@
+import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
@@ -5,6 +6,7 @@ from PyQt4.QtCore import *
 class BotHelpWindow(QDialog):
     def __init__(self):
         super().__init__()
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.bot_help_window = QDialog()
         self.layout = QVBoxLayout()
 
@@ -18,6 +20,11 @@ class BotHelpWindow(QDialog):
         self.info_button_3 = QPushButton("How to manage users?")
         self.info_button_4 = QPushButton("Work with cart")
         self.info_button_5 = QPushButton("Info5")
+
+        self.logo_label = QLabel()
+        self.logo_label.setAlignment(Qt.AlignHCenter)
+        self.logo_label.setPixmap(QPixmap(self.scriptDir + '/img/logos/help.png'))
+        self.layout.addWidget(self.logo_label)
 
         # text infos
         how_to_colors = '\n'.join(['When filling in "Choose color" field, you have the following options:\n' ,

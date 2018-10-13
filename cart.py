@@ -17,6 +17,11 @@ class Cart(QDialog):
         self.subtotal_label = QLabel()
         self.remember_button = QPushButton('Remember Choice')
 
+        self.logo_label = QLabel()
+        self.logo_label.setAlignment(Qt.AlignHCenter)
+        self.logo_label.setPixmap(QPixmap(self.scriptDir + '/img/logos/cart.png'))
+        self.layout.addWidget(self.logo_label)
+
         self.cart_counter()
 
         self.items_list_layout = QVBoxLayout()

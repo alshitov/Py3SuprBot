@@ -71,7 +71,7 @@ class SupremeApp(QWidget):
         self.setFixedWidth(1200)
         self.setWindowTitle('Py3SuprBot')
 
-        self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'logo.png'))
+        self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'img/logos/custom_logo.png'))
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.show()
 

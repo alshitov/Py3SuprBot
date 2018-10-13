@@ -26,7 +26,7 @@ def longInitialization(arg):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    splash = MySplashScreen('img/logo.png', Qt.WindowStaysOnTopHint)
+    splash = MySplashScreen('img/logos/custom_logo.png', Qt.WindowStaysOnTopHint)
     splash.show()
     app.processEvents()
     initLoop = QEventLoop()
