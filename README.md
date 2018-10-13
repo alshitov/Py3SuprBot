@@ -1,5 +1,5 @@
 # The project is under development #
-####You now have the opportunity to check it out:
+**You now have the opportunity to check it out:**  
 **1. Dependencies**  
 *1.1. python3 (3.6.6)*  
 *1.2. pip3 (I use 18.1 but even 9.0.1 fits too)*  
