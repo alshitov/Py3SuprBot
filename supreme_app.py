@@ -66,14 +66,24 @@ class SupremeApp(QWidget):
         vertbox.addLayout(horizbox)
 
         #           main window           #
-        self.setGeometry(2500, 100, 0, 675)
         self.setLayout(vertbox)
+
         self.setFixedWidth(1200)
+        self.setGeometry(0,0,0,675)
+        self.center()
         self.setWindowTitle('Py3SuprBot')
 
         self.setWindowIcon(QIcon(self.scriptDir + os.path.sep + 'img/logos/custom_logo.png'))
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.show()
+
+
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QApplication.desktop().screenNumber(QApplication.desktop().cursor().pos())
+        centerPoint = QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
 
     def create_item_modal_window(self, args):

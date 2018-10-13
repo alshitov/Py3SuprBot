@@ -97,15 +97,19 @@ class BotWindow(QDialog):
 
 
     def process_payment(self):
-        # here to collect user and time
-        # and process them to bot init
-        bot_ = Bot()
+        current_user = 'user_' + self.choose_user_combobox.currentText() + '.json'
+        drop_time = self.choose_time_label.text()
+
+        bot_ = Bot(current_user, drop_time)
         bot_.find_items()
 
 
 
 class Bot():
-    def __init__(self):
+    def __init__(self, current_user, drop_time):
+        self.current_user = current_user
+        self.drop_time = drop_time
+
         self.headers = {
             "Authority": "www.supremenewyork.com",
             "Method": "GET",
@@ -147,7 +151,7 @@ class Bot():
 
         print(self.driver.get_cookies())
 
-        user = self.get_user_billing_info('something')
+        user = self.get_user_billing_info(self.current_user)
 
         name_input = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_name"]')))

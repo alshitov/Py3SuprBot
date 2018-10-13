@@ -75,9 +75,16 @@ class UserInfoModalWindow(QDialog):
         self.card_number_input.setPlaceholderText("Card number")
         self.card_cvv_input.setPlaceholderText("CVV")
 
-        self.countries = ['GB', 'NB', 'AT', 'BY', 'BE', 'BG', 'HR', 'CZ', 'DK', 'EE', 'FI',
-                          'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LT', 'LU', 'MC',
-                          'NL', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SI', 'ES', 'SE', 'CH', 'TR']
+        # self.countries = ['GB', 'NB', 'AT', 'BY', 'BE', 'BG', 'HR', 'CZ', 'DK', 'EE', 'FI',
+        #                   'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LT', 'LU', 'MC',
+        #                   'NL', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SI', 'ES', 'SE', 'CH', 'TR']
+
+        self.countries = ['UK', 'UK (N. IRELAND)', 'AUSTRIA', 'BELARUS', 'BELGIUM', 'BULGARIA', 'CROATIA',
+                          'CZECH REPUBLIC', 'DENMARK', 'ESTONIA', 'FINLAND', 'FRANCE', 'GERMANY', 'GREECE',
+                          'HUNGARY', 'ICELAND', 'IRELAND', 'ITALY', 'LATVIA', 'LITHUANIA', 'LUXEMBOURG',
+                          'MONACO', 'NETHERLANDS', 'NORWAY', 'POLAND', 'PORTUGAL', 'ROMANIA', 'RUSSIA',
+                          'SLOVAKIA', 'SLOVENIA', 'SPAIN', 'SWEDEN', 'SWITZERLAND', 'TURKEY']
+
         self.country_combo.addItems(self.countries)
         self.cards = ['Visa', 'American Express', 'Mastercard', 'Solo', 'PayPal']
         self.card_type_combo.addItems(self.cards)
@@ -107,7 +114,7 @@ class UserInfoModalWindow(QDialog):
 
         self.postcode_input.setValidator(self.onlyInt)
 
-        card_number_re = QRegExp("[0-9]{,16}")
+        card_number_re = QRegExp("[0-9]{,}")
         card_number_validator = QRegExpValidator(card_number_re, self.card_cvv_input)
         self.card_number_input.setValidator(card_number_validator)
 

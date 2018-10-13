@@ -139,6 +139,7 @@ class Parser():
 
             # if latest link has been changed - that means new items has been dropped
             if link_to_items != curr_link:
+                print('Found drop update! Processing...')
                 # first, write down current link to local storage
                 with open('txt/latest.txt', mode='w') as f:
                     f.write(link_to_items)

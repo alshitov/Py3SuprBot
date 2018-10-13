@@ -33,8 +33,10 @@ if __name__ == "__main__":
     pool = Pool(processes=1)
     pool.apply_async(longInitialization, [2], callback=lambda exitCode: initLoop.exit(exitCode))
     initLoop.exec_()
+
     GUI = supreme_app.SupremeApp()
     splash.finish(GUI)
+
     app.exec_()
 
 
