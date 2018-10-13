@@ -110,7 +110,7 @@ class SupremeApp(QWidget):
         # also it writes down last used link to 'latest.txt'
 
         print('Checking for drop updates. Please, be patient!')
-        parser_.parse_main_window_content()
+        # parser_.parse_main_window_content()
 
         # reading content from dump
         with open('json/current_drop.json', mode='r') as fin:

@@ -43,12 +43,10 @@ class ItemModalWindow(QDialog):
                                       'US 10 / UK 9', 'US 10.5 / UK 9.5',
                                       'US 11 / UK 10', 'US 11.5 / UK 10.5',
                                       'US 12 / UK 11', 'US 13 / UK 12'])
-        elif arguments['type'] == 'hats' or arguments['type'] == 'bags' or arguments['type'] == 'accessories':
+        elif arguments['type'] == 'hats' or arguments['type'] == 'bags':
             self.size_combo.setVisible(False)
-        elif arguments['type'] == 'pants':
-            self.size_combo.addItems(['30', '32','34', '36'])
         else:
-            self.size_combo.addItems(['Small', 'Medium', 'Lagre', 'XLarge'])
+            self.size_combo.addItems(['30', '32','34', '36', 'Small', 'Medium', 'Lagre', 'XLarge'])
 
         self.size_combo.setToolTip('Use Sizing Help to check Supreme sizing on current droplist.')
 
