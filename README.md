@@ -27,4 +27,6 @@
 ***4. Run***
 >`# git clone https://github.com/ympo2oo2/Py3SuprBot`  
 >`# cd Py3SuprBot`  
->`# python3 Py3SuprBot`
+>`# python3 Py3SuprBot.py`
+
+***5. I did not tried it out on Windows yet.*** 
