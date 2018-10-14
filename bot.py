@@ -284,7 +284,7 @@ class Bot():
                     if color['name'] in priority_colors:  # Проверка на присутствие представленного в магазине цвета в приоритетных
                         if size_is_not_set:  # Если размер не выставлен
                             for size in color['sizes']:
-                                if size['stock_level'] is not '0':  # Проверка только на доступность данного размера
+                                if size['stock_level'] is not 0:  # Проверка только на доступность данного размера
                                     print(color['name'], size['name'])
                                     print('return 287')
                                     return {'color_id': color['id'], 'size_id': size['id']}
@@ -300,7 +300,7 @@ class Bot():
                         if color['name'] not in priority_colors:
                             if size_is_not_set:
                                 for size in color['sizes']:
-                                    if size['stock_level'] is not '0':
+                                    if size['stock_level'] is not 0:
                                         print(color['name'], size['name'])
                                         print('return 303')
                                         return {'color_id': color['id'], 'size_id': size['id']}
