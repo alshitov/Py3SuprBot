@@ -21,6 +21,18 @@ class BotHelpWindow(QDialog):
         self.info_button_4 = QPushButton("Work with cart")
         self.info_button_5 = QPushButton("Info5")
 
+        '''        if arguments['type'] == 'shoes':
+            sizes = ['US 9 / UK 8', 'US 9.5 / UK 8.5',
+                     'US 10 / UK 9', 'US 10.5 / UK 9.5',
+                     'US 11 / UK 10', 'US 11.5 / UK 10.5',
+                     'US 12 / UK 11', 'US 13 / UK 12']
+        elif arguments['type'] == 'hats':
+            sizes = ['S/M', 'M/L']
+        elif arguments['type'] == 'bags':
+            self.size_combo.setVisible(False)
+        else:
+            sizes = ['30', '32','34', '36', 'Small', 'Medium', 'Lagre', 'XLarge']'''
+
         self.logo_label = QLabel()
         self.logo_label.setAlignment(Qt.AlignHCenter)
         self.logo_label.setPixmap(QPixmap(self.scriptDir + '/img/logos/help.png'))

@@ -4,12 +4,7 @@ import requests
 import json
 import time
 from re import search
-
 from requests.utils import dict_from_cookiejar
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -104,7 +99,6 @@ class BotWindow(QDialog):
         bot_.find_items()
 
 
-
 class Bot():
     def __init__(self, current_user, drop_time):
         self.current_user = current_user
@@ -122,11 +116,11 @@ class Bot():
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)"
         }
-        self.driver = webdriver.Chrome(os.path.dirname(os.path.realpath(__file__)) + '/chromedriver')
+
 
     # получаем информацию о пользователе из файла
     def get_user_billing_info(self, filename):
-        with open(filename, mode='r') as fout:
+        with open('json/' + filename, mode='r') as fout:
             user = json.load(fout)
         return user
 
@@ -146,72 +140,14 @@ class Bot():
         return requests.request('GET', 'http://www.supremenewyork.com/shop/{}.json'.format(id), headers=self.headers).json()
 
 
-    def checkout(self):
-        self.driver.get('https://www.supremenewyork.com/checkout')
-
-        print(self.driver.get_cookies())
-
-        user = self.get_user_billing_info(self.current_user)
-
-        name_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_name"]')))
-        name_input.send_keys(user['name'])
-
-        email_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="order_email"]')))
-        email_input.send_keys(user['email'])
-
-        tel_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="order_tel"]')))
-        tel_input.send_keys(user['tel'])
-
-        address_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="bo"]')))
-        address_input.send_keys(user['address'])
-
-        address2_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="oba3"]')))
-        address2_input.send_keys(user['address2'])
-
-        address3_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_address_3"]')))
-        address3_input.send_keys(user['address3'])
-
-        city_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_city"]')))
-        city_input.send_keys(user['city'])
-
-        zip_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="order_billing_zip"]')))
-        zip_input.send_keys(user['postcode'])
-
-        self.driver.find_element_by_xpath('//*[@id="order_billing_country"]').send_keys(user['country'])
-        self.driver.find_element_by_xpath('//*[@id="credit_card_type"]').send_keys(user['card_type'])
-
-        card_n_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="cnb"]')))
-        card_n_input.send_keys(user['card_number'])
-
-        self.driver.find_element_by_xpath('//*[@id="credit_card_month"]').send_keys(user['card_month'])
-        self.driver.find_element_by_xpath('//*[@id="credit_card_year"]').send_keys(user['card_year'])
-
-        card_cvv_input = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="vval"]')))
-        card_cvv_input.send_keys(user['card_cvv'])
-
-        self.driver.find_element_by_xpath(
-            '/html/body/div[2]/div[1]/form/div[2]/div[2]/fieldset/p/label/div/ins').click()
-
-        time.sleep(200)
-
-
     def continue_to_cart(self, response):
-        self.driver.get('http://www.supremenewyork.com/shop/cart')  # commonly carts
-        self.driver.delete_all_cookies()
-        for key, value in dict_from_cookiejar(response.cookies).items():
-            self.driver.add_cookie({'name': key, 'value': value})
-        self.driver.refresh()
-        self.checkout()
+        # self.driver.get('http://www.supremenewyork.com/shop/cart')  # commonly carts
+        # self.driver.delete_all_cookies()
+        # for key, value in dict_from_cookiejar(response.cookies).items():
+        #     self.driver.add_cookie({'name': key, 'value': value})
+        # self.driver.refresh()
+        # self.checkout()
+        pass
 
 
     def show_cookies(self, response):
@@ -248,11 +184,11 @@ class Bot():
             'accept': '*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
             'accept-encoding': 'gzip, deflate, br',
             'accept-language': 'en-US,en;q=0.9',
+            'content-length': '58',
             'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'origin': 'https://www.supremenewyork.com',
             'referer': 'https://www.supremenewyork.com/shop/',
             'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
-            'x-csrf-token': 'cIwuKktS3yIn2yodqGwBOvutPdY8DVWk0R3QqUkWwQLmtNm09HJ2uca6XA6t22NI3y6RZYWJk1jiCNrTGG/j7g==',
             'x-requested-with': 'XMLHttpRequest',
         }
 
@@ -262,47 +198,175 @@ class Bot():
         if response.status_code != 200:
             print('Status code != 200')
             sys.exit()
+        elif response.json() == {}:
+                print('Response is empty!')
         else:
-            # print(response.json())
-            if response.json() == {}:
-                print('Responce empty!')
+            pass
 
-        # self.show_cookies(response)
+        self.show_cookies(response)
         self.continue_to_cart(response)
 
 
+    def choose_size_and_color(self, element, item_info):
+        print('**************Choosing color and size**************')
+        # Приоритетные цвета, если цвет не задан или задан любой цвет
+        priority_colors = ['White', 'Black', 'Red', 'Green', 'Blue']
+
+        # Представленные в магазине цвета по данной вещи
+        represented_colors = item_info['styles']
+
+        # Пересечение представленных в магазине цветов с заданными пользователем цветами
+        user_intersection = [x for x in [color['name'] for color in represented_colors] if x in [element['color']]]
+        prior_intersection = [x for x in [color['name'] for color in represented_colors] if x in priority_colors]
+
+        print('User Intersections: ', user_intersection)
+        print('Prior Intersections: ', prior_intersection)
+
+        found_color = found_size = None
+        found = False
+        # Если пересечений нет - ищем в приоритетных
+        if len(user_intersection) == 0:
+            print('No intersections found. Choosing from priority colors.')
+            for repr_color in represented_colors:
+                if repr_color['name'] in priority_colors:
+                    print('Found priority color -', repr_color['name'])
+                    # Если размер задан
+                    if element['size'] != '' and 'Any' not in element['size']:
+                        for size in repr_color['sizes']:     # По размерам, представленным в данном цвете
+                            if size['name'] in element['size'] and size['stock_level'] != 0:
+                                print(repr_color['name'], size['name'])
+                                found_color = repr_color['id']
+                                found_size = size['id']
+                                return {'color_id': found_color, 'size_id': found_size}
+                    else: # Размер не задан - берем перый доступный
+                        for size in repr_color['sizes']:
+                            if size['stock_level'] != 0:
+                                print(repr_color['name'], size['name'])
+                                found_color = repr_color['id']
+                                found_size = size['id']
+                                return {'color_id': found_color, 'size_id': found_size}
+
+        # Пересечения есть, ищем среди них
+        else:
+            print('Intersections found. Choosing from intersections.')
+            for repr_color in represented_colors:
+                if repr_color['name'] in user_intersection:
+                    print('Found color -', repr_color['name'])
+                    # Если размер задан
+                    if element['size'] != '' and 'Any' not in element['size']:
+                        print('Size was set.')
+                        for size in repr_color['sizes']:  # По размерам, представленным в данном цвете
+                            if size['name'] in element['size'] and size['stock_level'] != 0:
+                                found = True
+                                found_color = repr_color['id']
+                                found_size = size['id']
+                                return {'color_id': found_color, 'size_id': found_size}
+                    else:  # Размер не задан - берем перый доступный
+                        print('Size was not set.')
+                        for size in repr_color['sizes']:
+                            if size['stock_level'] != 0:
+                                print(repr_color['name'], size['name'])
+                                found_color = repr_color['id']
+                                found_size = size['id']
+                                return {'color_id': found_color, 'size_id': found_size}
+
+            else:
+                print('Intersections found, but none of them fit.')
+                for repr_color in represented_colors:
+                    for size in repr_color['sizes']:
+                        if size['stock_level'] != 0:
+                            print(repr_color['name'], size['name'])
+                            found_color = repr_color['id']
+                            found_size = size['id']
+                            return {'color_id': found_color, 'size_id': found_size}
+
+        return {'color_id': found_color, 'size_id': found_size}
+
+
     def find_items(self):
-        items_to_buy = self.get_buy_list()
-        # for item, index in enumerate(items_to_buy):
-        item_found = 0
-        while item_found == 0:
-            # refreshing stock
-            stock = self.fetch_stock()
-            # loop through items in concrete type list
-            for item in stock['products_and_categories'][items_to_buy[0]['type'].title()]:
-                # if names match up
-                if item['name'] == items_to_buy[0]['name']:
-                    # go to url/shop/%id%.json
-                    item_info = self.get_item_info(item['id'])
-                    # loop through item colors
-                    for index in item_info['styles']:
-                        # if colors match up
-                        if index['name'] == items_to_buy[0]['color']:
-                            # loop throught sizes
-                            for size in index['sizes']:
-                                # if sizes match up
-                                if size['name'] == items_to_buy[0]['size']:
-                                    item_found = 1
+        my_items = self.get_buy_list()
 
-                                    print('Found!')
+        item_found = False
+        for element in my_items:
 
-                                    item_id = item['id']
-                                    item_color_id = index['id']
-                                    item_size_id  = size['id']
+            while item_found is False:
+                # вещи, доступные на сайте
+                print('***********Refreshing stock.**************')
+                stock = self.fetch_stock()
 
-                                    self.add_to_cart(item_id, item_color_id, item_size_id)
-                                    break
-                            break
-                    break
-                else: # if no item name match found
-                    print('Not found. Refreshing...') # wait for several secs, thus not to get banned maybe?
+                for item in stock['products_and_categories'][element['type'].title()]:
+                    if item['name'] == element['name']:
+                        print(item['name'], 'found!')
+                        item_found = True
+
+                        item_info = self.get_item_info(item['id'])
+                        print(item['name'], 'id is:', item['id'])
+
+                        index = self.choose_size_and_color(element, item_info)
+                        print(item['id'], index['color_id'], index['size_id'])
+
+                        self.add_to_cart(item['id'], index['color_id'], index['size_id'])
+                        break
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # items_to_buy = self.get_buy_list()
+        # for element in items_to_buy:
+        #     print(element)
+        #     item_found = color_found = size_found = False
+        #     while item_found is False:
+        #         # refreshing stock
+        #         stock = self.fetch_stock()
+        #         # loop through items in concrete type list
+        #         for item in stock['products_and_categories'][element['type'].title()]:
+        #             # if names match up
+        #             if item['name'] == element['name']:
+        #                 item_found = True
+        #                 # go to url/shop/%id%.json
+        #                 item_info = self.get_item_info(item['id'])
+        #                 # loop through item colors
+        #                 for index in item_info['styles']:
+        #                     # if colors match up
+        #                     if index['name'] == element['color']:
+        #                         color_found = True
+        #                         # loop throught sizes
+        #                         for size in index['sizes']:
+        #                             # if sizes match up
+        #                             if size['name'] == ['size']:
+        #                                 size_found = True
+        #
+        #                                 print('Found!')
+        #
+        #                                 item_id = item['id']
+        #                                 item_color_id = index['id']
+        #                                 item_size_id  = size['id']
+        #
+        #                                 self.add_to_cart(item_id, item_color_id, item_size_id)
+        #                                 break
+        #                         break
+        #                 break
+        #             else: # if no item name match found
+        #                 print('Not found. Refreshing...')

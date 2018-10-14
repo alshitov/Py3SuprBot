@@ -4,8 +4,6 @@ from PyQt4.QtCore import *
 import json
 
 
-#TODO: disable "Add to cart" button if size label is empty
-
 class ItemModalWindow(QDialog):
     def __init__(self, arguments):
         super().__init__()
@@ -34,26 +32,16 @@ class ItemModalWindow(QDialog):
         self.add_to_cart_button.setText("Add to Cart")
 
         # user choose labels
+        self.info_color_input = QLabel('<b>Choose color:</b>')
+        self.info_size_input = QLabel('<b>Choose size:</b>')
         self.color_input = QLineEdit()
-        self.size_combo = QComboBox()
+        self.size_input = QLineEdit()
 
-        # size combo settings
-        if arguments['type'] == 'shoes':
-            self.size_combo.addItems(['US 9 / UK 8', 'US 9.5 / UK 8.5',
-                                      'US 10 / UK 9', 'US 10.5 / UK 9.5',
-                                      'US 11 / UK 10', 'US 11.5 / UK 10.5',
-                                      'US 12 / UK 11', 'US 13 / UK 12'])
-        elif arguments['type'] == 'hats' or arguments['type'] == 'bags':
-            self.size_combo.setVisible(False)
-        else:
-            self.size_combo.addItems(['30', '32','34', '36', 'Small', 'Medium', 'Lagre', 'XLarge'])
-
-        self.size_combo.setToolTip('Use Sizing Help to check Supreme sizing on current droplist.')
+        text_re = QRegExp("[a-zA-Z \!,]+")
 
         # color input settings
-        self.color_input.setPlaceholderText("Choose color (hover for help)")
-        color_re = QRegExp("[a-zA-Z \!,]+")
-        color_input_validator = QRegExpValidator(color_re, self.color_input)
+        self.color_input.setPlaceholderText("E.g.: Black, !Red, Green (*hover for help*)")
+        color_input_validator = QRegExpValidator(text_re, self.color_input)
         self.color_input.setValidator(color_input_validator)
 
         self.color_input.setToolTip('''
@@ -76,6 +64,13 @@ class ItemModalWindow(QDialog):
         SEE RULES IN BOT HELP! 
         ''')
 
+        # size combo settings
+        self.size_input.setPlaceholderText("E.g.: 32, !XLarge, Small (*hover for help*)")
+        size_input_validator = QRegExpValidator(text_re, self.size_input)
+        self.size_input.setValidator(size_input_validator)
+
+        self.size_input.setToolTip('Use Sizing Help to check Supreme sizing on current droplist.')
+
         self.connect(self.add_to_cart_button,
                      SIGNAL('clicked()'),
                      lambda: self.add_to_cart(arguments))
@@ -84,8 +79,10 @@ class ItemModalWindow(QDialog):
         self.horizbox.addWidget(self.item_image)
         self.horizbox.addLayout(self.vertbox)
         self.vertbox.addWidget(self.description)
+        self.vertbox.addWidget(self.info_color_input)
         self.vertbox.addWidget(self.color_input)
-        self.vertbox.addWidget(self.size_combo)
+        self.vertbox.addWidget(self.info_size_input)
+        self.vertbox.addWidget(self.size_input)
         self.vertbox.addWidget(self.add_to_cart_button)
 
         self.dialog_window.setLayout(self.horizbox)
@@ -100,7 +97,7 @@ class ItemModalWindow(QDialog):
             'name': arguments['name'],
             'type': arguments['type'],
             'color': str(self.color_input.text()),
-            'size': str(self.size_combo.currentText()),
+            'size': str(self.size_input.text()),
             'price': arguments['price'],
             'image': arguments['image']
         }
