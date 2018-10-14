@@ -215,72 +215,105 @@ class Bot():
         # Представленные в магазине цвета по данной вещи
         represented_colors = item_info['styles']
 
-        # Пересечение представленных в магазине цветов с заданными пользователем цветами
-        user_intersection = [x for x in [color['name'] for color in represented_colors] if x in [element['color']]]
-        prior_intersection = [x for x in [color['name'] for color in represented_colors] if x in priority_colors]
+        # Флаги цвета и размера
+        color_is_not_set = 'Any' in element['color'] or element['color'] == ''
+        size_is_not_set = 'Any' in element['size'] or element['size'] == ''
 
-        print('User Intersections: ', user_intersection)
-        print('Prior Intersections: ', prior_intersection)
+        ###################### Начало перебора ######################
+        # Цвет не задан
+        if color_is_not_set:
+            for color in represented_colors: # Итерация по представленным цветам
+                if color['name'] in priority_colors: # Проверка на присутствие представленного в магазине цвета в приоритетных
+                    if size_is_not_set: # Если размер не выставлен
+                        for size in color['sizes']:
+                            if size['stock_level'] is not 0: # Проверка только на доступность данного размера
+                                print(color['name'], size['name'])
+                                return {'color_id': color['id'], 'size_id': size['id']}
+                    else: # Размер выставлен
+                        for size in color['sizes']:
+                            # Проверка на доступность данного размера и на присутствие его в списке пользователя
+                            if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                print(color['name'], size['name'])
+                                return {'color_id': color['id'], 'size_id': size['id']}
 
-        found_color = found_size = None
-        found = False
-        # Если пересечений нет - ищем в приоритетных
-        if len(user_intersection) == 0:
-            print('No intersections found. Choosing from priority colors.')
-            for repr_color in represented_colors:
-                if repr_color['name'] in priority_colors:
-                    print('Found priority color -', repr_color['name'])
-                    # Если размер задан
-                    if element['size'] != '' and 'Any' not in element['size']:
-                        for size in repr_color['sizes']:     # По размерам, представленным в данном цвете
-                            if size['name'] in element['size'] and size['stock_level'] != 0:
-                                print(repr_color['name'], size['name'])
-                                found_color = repr_color['id']
-                                found_size = size['id']
-                                return {'color_id': found_color, 'size_id': found_size}
-                    else: # Размер не задан - берем перый доступный
-                        for size in repr_color['sizes']:
-                            if size['stock_level'] != 0:
-                                print(repr_color['name'], size['name'])
-                                found_color = repr_color['id']
-                                found_size = size['id']
-                                return {'color_id': found_color, 'size_id': found_size}
+            else: # Если не найдено в приоритетных - идем по всем
+                print('Not found in priority')
+                for color in represented_colors:
+                    if color['name'] not in priority_colors:
+                        if size_is_not_set:
+                            for size in color['sizes']:
+                                if size['stock_level'] is not 0:
+                                    print(color['name'], size['name'])
+                                    print('return 246')
+                                    return {'color_id': color['id'], 'size_id': size['id']}
+                        else:  # Размер выставлен
+                            for size in color['sizes']:
+                                # Проверка на доступность данного размера и на присутствие его в списке пользователя
+                                if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                    print(color['name'], size['name'])
+                                    print('return 253')
+                                    return {'color_id': color['id'], 'size_id': size['id']}
+                else:
+                    for color in represented_colors:
+                        for size in color['sizes']:
+                            if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                print(color['name'], size['name'])
+                                print('return 260')
+                                return {'color_id': color['id'], 'size_id': size['id']}
 
-        # Пересечения есть, ищем среди них
+        # Цвет задан
         else:
-            print('Intersections found. Choosing from intersections.')
-            for repr_color in represented_colors:
-                if repr_color['name'] in user_intersection:
-                    print('Found color -', repr_color['name'])
-                    # Если размер задан
-                    if element['size'] != '' and 'Any' not in element['size']:
-                        print('Size was set.')
-                        for size in repr_color['sizes']:  # По размерам, представленным в данном цвете
-                            if size['name'] in element['size'] and size['stock_level'] != 0:
-                                found = True
-                                found_color = repr_color['id']
-                                found_size = size['id']
-                                return {'color_id': found_color, 'size_id': found_size}
-                    else:  # Размер не задан - берем перый доступный
-                        print('Size was not set.')
-                        for size in repr_color['sizes']:
-                            if size['stock_level'] != 0:
-                                print(repr_color['name'], size['name'])
-                                found_color = repr_color['id']
-                                found_size = size['id']
-                                return {'color_id': found_color, 'size_id': found_size}
+            for color in represented_colors: # Итерация по представленным цветам
+                if color['name'] in element['color']: # Проверка на присутствие представленного в магазине цвета в пользовательских цветах
+                    if size_is_not_set: # Если размер не выставлен
+                        for size in color['sizes']:
+                            if size['stock_level'] is not '0': # Проверка только на доступность данного размера
+                                print(color['name'], size['name'])
+                                print('return 270')
+                                return {'color_id': color['id'], 'size_id': size['id']}
+                    else: # Размер выставлен
+                        for size in color['sizes']:
+                            # Проверка на доступность данного размера и на присутствие его в списке пользователя
+                            if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                print(color['name'], size['name'])
+                                print('return 277')
+                                return {'color_id': color['id'], 'size_id': size['id']}
 
-            else:
-                print('Intersections found, but none of them fit.')
-                for repr_color in represented_colors:
-                    for size in repr_color['sizes']:
-                        if size['stock_level'] != 0:
-                            print(repr_color['name'], size['name'])
-                            found_color = repr_color['id']
-                            found_size = size['id']
-                            return {'color_id': found_color, 'size_id': found_size}
+            else: # Ни одного пользовательского цвета не найдено - идем по приоритетным
+                for color in represented_colors:  # Итерация по приоритетным цветам
+                    if color['name'] in priority_colors:  # Проверка на присутствие представленного в магазине цвета в приоритетных
+                        if size_is_not_set:  # Если размер не выставлен
+                            for size in color['sizes']:
+                                if size['stock_level'] is not '0':  # Проверка только на доступность данного размера
+                                    print(color['name'], size['name'])
+                                    print('return 287')
+                                    return {'color_id': color['id'], 'size_id': size['id']}
+                        else:
+                            for size in color['sizes']:
+                                # Проверка на доступность данного размера и на присутствие его в списке пользователя
+                                if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                    print(color['name'], size['name'])
+                                    print('return 293')
+                                    return {'color_id': color['id'], 'size_id': size['id']}
+                else:  # Если не найдено в приоритетных - идем по всем
+                    for color in represented_colors:
+                        if color['name'] not in priority_colors:
+                            if size_is_not_set:
+                                for size in color['sizes']:
+                                    if size['stock_level'] is not '0':
+                                        print(color['name'], size['name'])
+                                        print('return 303')
+                                        return {'color_id': color['id'], 'size_id': size['id']}
+                    else:
+                        for color in represented_colors:
+                            for size in color['sizes']:
+                                if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                    print(color['name'], size['name'])
+                                    print('return 310')
+                                    return {'color_id': color['id'], 'size_id': size['id']}
 
-        return {'color_id': found_color, 'size_id': found_size}
+        ###################### Конец перебора ######################
+        return {'color_id': None, 'size_id': None}
 
 
     def find_items(self):
@@ -293,8 +326,9 @@ class Bot():
                 # вещи, доступные на сайте
                 print('***********Refreshing stock.**************')
                 stock = self.fetch_stock()
+                element['type'] = 'Tops/Sweaters' if element['type'] == 'tops-sweaters' else element['type'].title()
 
-                for item in stock['products_and_categories'][element['type'].title()]:
+                for item in stock['products_and_categories'][element['type']]:
                     if item['name'] == element['name']:
                         print(item['name'], 'found!')
                         item_found = True
@@ -303,70 +337,10 @@ class Bot():
                         print(item['name'], 'id is:', item['id'])
 
                         index = self.choose_size_and_color(element, item_info)
-                        print(item['id'], index['color_id'], index['size_id'])
+                        if index['color_id'] is None or index['size_id'] is None:
+                            print('Desired item has been sold out')
+                            # TODO: create algorithm(add to bot config) that will buy item with any color and size if desired item was sold out
+                        else:
+                            print('Info to request: ', item['id'], index['color_id'], index['size_id'])
 
-                        self.add_to_cart(item['id'], index['color_id'], index['size_id'])
-                        break
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # items_to_buy = self.get_buy_list()
-        # for element in items_to_buy:
-        #     print(element)
-        #     item_found = color_found = size_found = False
-        #     while item_found is False:
-        #         # refreshing stock
-        #         stock = self.fetch_stock()
-        #         # loop through items in concrete type list
-        #         for item in stock['products_and_categories'][element['type'].title()]:
-        #             # if names match up
-        #             if item['name'] == element['name']:
-        #                 item_found = True
-        #                 # go to url/shop/%id%.json
-        #                 item_info = self.get_item_info(item['id'])
-        #                 # loop through item colors
-        #                 for index in item_info['styles']:
-        #                     # if colors match up
-        #                     if index['name'] == element['color']:
-        #                         color_found = True
-        #                         # loop throught sizes
-        #                         for size in index['sizes']:
-        #                             # if sizes match up
-        #                             if size['name'] == ['size']:
-        #                                 size_found = True
-        #
-        #                                 print('Found!')
-        #
-        #                                 item_id = item['id']
-        #                                 item_color_id = index['id']
-        #                                 item_size_id  = size['id']
-        #
-        #                                 self.add_to_cart(item_id, item_color_id, item_size_id)
-        #                                 break
-        #                         break
-        #                 break
-        #             else: # if no item name match found
-        #                 print('Not found. Refreshing...')
+                        # self.add_to_cart(item['id'], index['color_id'], index['size_id'])
