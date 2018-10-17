@@ -13,6 +13,8 @@ class ItemModalWindow(QDialog):
         self.horizbox = QHBoxLayout()
         self.vertbox = QVBoxLayout()
 
+        self.vertbox.setContentsMargins(0, 0, 0, 15)
+
         # image
         self.item_image = QLabel()
         pixmap = QPixmap(self.scriptDir + '/img/500px/' + str(arguments['image']))
@@ -36,6 +38,7 @@ class ItemModalWindow(QDialog):
         self.info_size_input = QLabel('<b>Choose size:</b>')
         self.color_input = QLineEdit()
         self.size_input = QLineEdit()
+        self.warning = QLabel('')
 
         text_re = QRegExp("[a-zA-Z \!,]+")
 
@@ -75,6 +78,8 @@ class ItemModalWindow(QDialog):
                      SIGNAL('clicked()'),
                      lambda: self.add_to_cart(arguments))
 
+        self.check_limit_per_product(arguments)
+
         # placing
         self.horizbox.addWidget(self.item_image)
         self.horizbox.addLayout(self.vertbox)
@@ -83,6 +88,7 @@ class ItemModalWindow(QDialog):
         self.vertbox.addWidget(self.color_input)
         self.vertbox.addWidget(self.info_size_input)
         self.vertbox.addWidget(self.size_input)
+        self.vertbox.addWidget(self.warning)
         self.vertbox.addWidget(self.add_to_cart_button)
 
         self.dialog_window.setLayout(self.horizbox)
@@ -90,6 +96,19 @@ class ItemModalWindow(QDialog):
         self.dialog_window.setWindowTitle(arguments['name'])
         self.dialog_window.setModal(True)
         self.dialog_window.exec_()
+
+
+    def check_limit_per_product(self, arguments):
+        with open('json/items_to_buy.json', mode='r', encoding='utf-8') as f:
+            items = json.load(f)
+
+        for item in items:
+            if item['name'] == arguments['name']:
+                self.warning.setText('Limited to 1 per product')
+                self.warning.setStyleSheet('color: red')
+                self.add_to_cart_button.setDisabled(True)
+        else:
+            pass
 
 
     def add_to_cart(self, arguments):

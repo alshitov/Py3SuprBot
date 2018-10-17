@@ -1,13 +1,18 @@
-import sys
 import os
 import requests
 import json
 import time
-from re import search
-from requests.utils import dict_from_cookiejar
-
+from re import search, findall
+from re import split as re_s
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+from seleniumrequests import Chrome
+
 
 
 class BotWindow(QDialog):
@@ -99,7 +104,7 @@ class BotWindow(QDialog):
         bot_.find_items()
 
 
-class Bot():
+class Bot:
     def __init__(self, current_user, drop_time):
         self.current_user = current_user
         self.drop_time = drop_time
@@ -119,14 +124,16 @@ class Bot():
 
 
     # получаем информацию о пользователе из файла
-    def get_user_billing_info(self, filename):
+    @staticmethod
+    def get_user_billing_info(filename):
         with open('json/' + filename, mode='r') as fout:
             user = json.load(fout)
         return user
 
 
     # получаем список вещей на покупку из файла
-    def get_buy_list(self):
+    @staticmethod
+    def get_buy_list():
         with open('json/items_to_buy.json', mode='r') as fout:
             return json.load(fout)
 
@@ -140,17 +147,99 @@ class Bot():
         return requests.request('GET', 'http://www.supremenewyork.com/shop/{}.json'.format(id), headers=self.headers).json()
 
 
-    def continue_to_cart(self, response):
-        # self.driver.get('http://www.supremenewyork.com/shop/cart')  # commonly carts
-        # self.driver.delete_all_cookies()
-        # for key, value in dict_from_cookiejar(response.cookies).items():
-        #     self.driver.add_cookie({'name': key, 'value': value})
-        # self.driver.refresh()
-        # self.checkout()
-        pass
+    def pure_cart_generator(self, data):
+        sizes = ''
+        total = 0
+        sizes_colors = ''
+
+        for piece in data:
+            total += int(piece[3])
+            sizes += '"{}":1,'.format(piece[2])
+            sizes_colors += '{},{}-'.format(piece[2], piece[1])
+
+        count = len(data)
+        if count == 1:
+            cookie = '"cookie":"1 item--"'
+        else:
+            cookie = '"cookie":"{}+items--{}"'.format(count, sizes_colors[:-1])
+
+        from urllib.request import quote
+        return quote('{' + sizes + cookie + ',"total":"€{}"'.format(total) + '}', safe='')
 
 
-    def show_cookies(self, response):
+    def checkout(self, response, data):
+        sess = cart = ''
+
+        for item in re_s('[;,]', response.headers['Set-Cookie']):
+            if item[:9] == ' _supreme':
+                sess = item
+                break
+
+        for item in re_s('[;,]', response.headers['Set-Cookie']):
+            if item[:4] == 'cart':
+                cart = item
+                break
+
+        pure_cart = self.pure_cart_generator(data)
+
+        url = 'https://www.supremenewyork.com/checkout'
+
+        headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                   'Accept-Encoding': 'gzip, deflate, sdch, br',
+                   'Accept-Language': 'en-US,en;q=0.8',
+                   'Connection': 'keep-alive',
+                   'Cookie': 'pure_cart={};'.format(pure_cart) + 'cart={};'.format(cart) + '_supreme_sess={};'.format(
+                       sess),
+                   'Host': 'www.supremenewyork.com',
+                   'If-None-Match': 'W/"7cd6c2d3c1278e6ec2f8f895e92dc2dd"',
+                   'Referer': 'https:/www.supremenewyork.com/checkout',
+                   'Upgrade-Insecure-Requests': '1',
+                   'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87'
+                   }
+
+        auth_r = requests.post(url=url, headers=headers, timeout=2)
+
+        x_csrf_token = findall('<meta name="csrf-token" content="(.*==)" />', auth_r.text)[0]
+
+        user = self.get_user_billing_info(self.current_user)
+
+        form_data = {
+            'authenticity_token': x_csrf_token,
+            'order[billing_name]': user['name'],
+            'order[email]': user['email'],
+            'order[tel]': user['tel'],
+            'order[billing_address]': user['address'],
+            'order[billing_address_2]': user['address2'],
+            'order[billing_address_3]': user['address3'],
+            'order[billing_city]': user['city'],
+            'order[billing_zip]': user['postcode'],
+            'order[billing_country]': user['country'],
+            'same_as_billing_address': '1',
+            'store_credit_id': '0',
+            'credit_card[type]': user['card_type'],
+            'credit_card[cnb]': user['card_number'],
+            'credit_card[month]': user['card_month'],
+            'credit_card[year]': user['card_year'],
+            'credit_card[vval]': user['card_cvv'],
+            'order[terms]': '1',
+            'hpcvv': ''
+        }
+
+        browser = Chrome(os.path.dirname(os.path.realpath(__file__)) + '/chromedriver')
+        browser.get(url='https://www.supremenewyork.com/shop/cart')
+        browser.delete_all_cookies()
+
+        for key, value in requests.utils.dict_from_cookiejar(response.cookies).items():
+            browser.add_cookie({'name': key, 'value': value})
+
+        browser.refresh()
+        browser.get(url='https://www.supremenewyork.com/checkout')
+        response = browser.request('POST', 'https://www.supremenewyork.com/checkout', data=form_data)
+
+        print(response.content)
+
+    @staticmethod
+    def show_cookies(response):
         cookie_dict_wrapper = []
         for key, value in requests.utils.dict_from_cookiejar(response.cookies).items():
             dict_template = {
@@ -166,48 +255,55 @@ class Bot():
         print('Cookies:', json.dumps(cookie_dict_wrapper, indent=4))
 
 
-    def add_to_cart(self, product_id, color_id, size_id):
+    def add_to_cart(self, data):
         print('Adding to cart...')
+        response = None
+        cookies = {}
 
-        form_data = {
-            'utf8': '%E2%9C%93',
-            'style': str(color_id),
-            'size': str(size_id),
-            'commit': 'add+to+basket'
-        }
+        for element in data:
+            product_id = element[0]
+            color_id = element[1]
+            size_id = element[2]
 
-        headers = {
-            'Authotiry': 'www.supremenewyork.com',
-            'Method': 'POST',
-            'Path': '/shop/{}/add'.format(product_id),
-            'Scheme': 'https',
-            'accept': '*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'en-US,en;q=0.9',
-            'content-length': '58',
-            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'origin': 'https://www.supremenewyork.com',
-            'referer': 'https://www.supremenewyork.com/shop/',
-            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
-            'x-requested-with': 'XMLHttpRequest',
-        }
+            form_data = {
+                'utf8': '%E2%9C%93',
+                'style': str(color_id),
+                'size': str(size_id),
+                'commit': 'add+to+basket'
+            }
 
-        response = requests.request('POST', 'https://www.supremenewyork.com/shop/{}/add.json'.format(product_id),
-                                        data=form_data, headers=headers)
+            headers = {
+                'Authotiry': 'www.supremenewyork.com',
+                'Method': 'POST',
+                'Path': '/shop/{}/add'.format(product_id),
+                'Scheme': 'https',
+                'accept': '*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, '
+                          'application/x-ecmascript',
+                'accept-encoding': 'gzip, deflate, br',
+                'accept-language': 'en-US,en;q=0.9',
+                'content-length': '58',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'origin': 'https://www.supremenewyork.com',
+                'referer': 'https://www.supremenewyork.com/shop/',
+                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                              'Chrome/69.0.3497.100 Safari/537.36',
+                'x-requested-with': 'XMLHttpRequest',
+            }
 
-        if response.status_code != 200:
-            print('Status code != 200')
-            sys.exit()
-        elif response.json() == {}:
-                print('Response is empty!')
-        else:
-            pass
-
-        self.show_cookies(response)
-        self.continue_to_cart(response)
+            response = requests.request('POST',
+                                        'https://www.supremenewyork.com/shop/{}/add.json'.format(product_id),
+                                        data=form_data,
+                                        headers=headers,
+                                        cookies=cookies)
+            cookies = response.cookies
 
 
-    def choose_size_and_color(self, element, item_info):
+        # self.show_cookies(response)
+        self.checkout(response, data)
+
+
+    @staticmethod
+    def choose_size_and_color(element, item_info):
         print('**************Choosing color and size**************')
         # Приоритетные цвета, если цвет не задан или задан любой цвет
         priority_colors = ['White', 'Black', 'Red', 'Green', 'Blue']
@@ -219,128 +315,128 @@ class Bot():
         color_is_not_set = 'Any' in element['color'] or element['color'] == ''
         size_is_not_set = 'Any' in element['size'] or element['size'] == ''
 
-        ###################### Начало перебора ######################
+        # Начало выбора
         # Цвет не задан
         if color_is_not_set:
-            for color in represented_colors: # Итерация по представленным цветам
-                if color['name'] in priority_colors: # Проверка на присутствие представленного в магазине цвета в приоритетных
-                    if size_is_not_set: # Если размер не выставлен
+            # Итерация по представленным цветам
+            for color in represented_colors:
+                # Проверка на присутствие представленного в магазине цвета в приоритетных
+                if color['name'] in priority_colors:
+                    # Если размер не выставлен
+                    if size_is_not_set:
                         for size in color['sizes']:
-                            if size['stock_level'] is not 0: # Проверка только на доступность данного размера
-                                print(color['name'], size['name'])
+                            # Проверка только на доступность данного размера
+                            if size['stock_level'] is not 0:
                                 return {'color_id': color['id'], 'size_id': size['id']}
-                    else: # Размер выставлен
+                    # Размер выставлен
+                    else:
                         for size in color['sizes']:
                             # Проверка на доступность данного размера и на присутствие его в списке пользователя
                             if size['name'] in element['size'] and size['stock_level'] is not 0:
-                                print(color['name'], size['name'])
                                 return {'color_id': color['id'], 'size_id': size['id']}
-
-            else: # Если не найдено в приоритетных - идем по всем
-                print('Not found in priority')
+            # Если не найдено в приоритетных - идем по всем
+            else:
                 for color in represented_colors:
                     if color['name'] not in priority_colors:
+                        # Размер не выставлен
                         if size_is_not_set:
                             for size in color['sizes']:
                                 if size['stock_level'] is not 0:
-                                    print(color['name'], size['name'])
-                                    print('return 246')
                                     return {'color_id': color['id'], 'size_id': size['id']}
-                        else:  # Размер выставлен
+                        # Размер выставлен
+                        else:
                             for size in color['sizes']:
                                 # Проверка на доступность данного размера и на присутствие его в списке пользователя
                                 if size['name'] in element['size'] and size['stock_level'] is not 0:
-                                    print(color['name'], size['name'])
-                                    print('return 253')
                                     return {'color_id': color['id'], 'size_id': size['id']}
                 else:
                     for color in represented_colors:
                         for size in color['sizes']:
                             if size['name'] in element['size'] and size['stock_level'] is not 0:
-                                print(color['name'], size['name'])
-                                print('return 260')
                                 return {'color_id': color['id'], 'size_id': size['id']}
 
         # Цвет задан
         else:
-            for color in represented_colors: # Итерация по представленным цветам
-                if color['name'] in element['color']: # Проверка на присутствие представленного в магазине цвета в пользовательских цветах
-                    if size_is_not_set: # Если размер не выставлен
+            # Итерация по представленным цветам
+            for color in represented_colors:
+                # Проверка на присутствие представленного в магазине цвета в пользовательских цветах
+                if color['name'] in element['color']:
+                    # Если размер не выставлен
+                    if size_is_not_set:
                         for size in color['sizes']:
-                            if size['stock_level'] is not '0': # Проверка только на доступность данного размера
-                                print(color['name'], size['name'])
-                                print('return 270')
+                            # Проверка только на доступность данного размера
+                            if size['stock_level'] is not 0:
                                 return {'color_id': color['id'], 'size_id': size['id']}
-                    else: # Размер выставлен
+                    # Размер выставлен
+                    else:
                         for size in color['sizes']:
                             # Проверка на доступность данного размера и на присутствие его в списке пользователя
                             if size['name'] in element['size'] and size['stock_level'] is not 0:
-                                print(color['name'], size['name'])
-                                print('return 277')
                                 return {'color_id': color['id'], 'size_id': size['id']}
-
-            else: # Ни одного пользовательского цвета не найдено - идем по приоритетным
-                for color in represented_colors:  # Итерация по приоритетным цветам
-                    if color['name'] in priority_colors:  # Проверка на присутствие представленного в магазине цвета в приоритетных
-                        if size_is_not_set:  # Если размер не выставлен
+            # Ни одного пользовательского цвета не найдено - идем по приоритетным
+            else:
+                # Итерация по приоритетным цветам
+                for color in represented_colors:
+                    # Проверка на присутствие представленного в магазине цвета в приоритетных
+                    if color['name'] in priority_colors:
+                        # Если размер не выставлен
+                        if size_is_not_set:
                             for size in color['sizes']:
-                                if size['stock_level'] is not 0:  # Проверка только на доступность данного размера
-                                    print(color['name'], size['name'])
-                                    print('return 287')
+                                # Проверка только на доступность данного размера
+                                if size['stock_level'] is not 0:
                                     return {'color_id': color['id'], 'size_id': size['id']}
+                        # Размер выставлен
                         else:
                             for size in color['sizes']:
                                 # Проверка на доступность данного размера и на присутствие его в списке пользователя
                                 if size['name'] in element['size'] and size['stock_level'] is not 0:
-                                    print(color['name'], size['name'])
-                                    print('return 293')
                                     return {'color_id': color['id'], 'size_id': size['id']}
-                else:  # Если не найдено в приоритетных - идем по всем
+                # Если не найдено в приоритетных - идем по всем
+                else:
                     for color in represented_colors:
                         if color['name'] not in priority_colors:
                             if size_is_not_set:
                                 for size in color['sizes']:
                                     if size['stock_level'] is not 0:
-                                        print(color['name'], size['name'])
-                                        print('return 303')
                                         return {'color_id': color['id'], 'size_id': size['id']}
                     else:
                         for color in represented_colors:
                             for size in color['sizes']:
                                 if size['name'] in element['size'] and size['stock_level'] is not 0:
-                                    print(color['name'], size['name'])
-                                    print('return 310')
                                     return {'color_id': color['id'], 'size_id': size['id']}
 
-        ###################### Конец перебора ######################
+        # Конец выбора
+
+        # Если предмет не найден
         return {'color_id': None, 'size_id': None}
 
 
     def find_items(self):
         my_items = self.get_buy_list()
+        requests_data = []
 
-        item_found = False
         for element in my_items:
 
-            while item_found is False:
+            item_found = False
+            while not item_found:
+                print('Refreshing stock.')
                 # вещи, доступные на сайте
-                print('***********Refreshing stock.**************')
                 stock = self.fetch_stock()
                 element['type'] = 'Tops/Sweaters' if element['type'] == 'tops-sweaters' else element['type'].title()
-
                 for item in stock['products_and_categories'][element['type']]:
                     if item['name'] == element['name']:
-                        print(item['name'], 'found!')
                         item_found = True
-
+                        price = round(item['price_euro'] / 100)
+                        print(price)
                         item_info = self.get_item_info(item['id'])
-                        print(item['name'], 'id is:', item['id'])
-
-                        index = self.choose_size_and_color(element, item_info)
-                        if index['color_id'] is None or index['size_id'] is None:
+                        color_and_size = self.choose_size_and_color(element, item_info)
+                        if color_and_size['color_id'] is None or color_and_size['size_id'] is None:
                             print('Desired item has been sold out')
                             # TODO: create algorithm(add to bot config) that will buy item with any color and size if desired item was sold out
                         else:
-                            print('Info to request: ', item['id'], index['color_id'], index['size_id'])
+                            requests_data.append([item['id'], color_and_size['color_id'], color_and_size['size_id'], price])
 
-                        # self.add_to_cart(item['id'], index['color_id'], index['size_id'])
+                time.sleep(1) if not item_found else None
+
+        if len(requests_data) == len(my_items):
+            self.add_to_cart(requests_data)
