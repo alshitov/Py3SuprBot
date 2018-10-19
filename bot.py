@@ -25,7 +25,7 @@ class BotWindow(QDialog):
 
         self.info_label_check_items = QLabel('<b>Check your buy list:</b>')
         self.info_label_choose_user = QLabel('<b>Choose user:</b>')
-        self.info_label_choose_time = QLabel('<b>Choose drop time(GMT):</b>')
+        self.info_label_choose_time = QLabel('<b>Choose drop time:</b>')
 
         self.check_items_label = QLabel()
         self.choose_user_combobox = QComboBox()
@@ -97,17 +97,23 @@ class BotWindow(QDialog):
 
 
     def process_payment(self):
-        current_user = 'user_' + self.choose_user_combobox.currentText() + '.json'
+        from datetime import datetime
         drop_time = self.choose_time_label.text()
+        time_now = datetime.now().strftime('%I:%M %p')
 
-        bot_ = Bot(current_user, drop_time)
-        bot_.find_items()
+        while str(time_now) != str(drop_time):
+            print('Drop time:', drop_time, '. Time now:', time_now)
+            time_now = datetime.now().strftime('%I:%M %p')
+            time.sleep(0.5)
+        else:
+            current_user = 'user_' + self.choose_user_combobox.currentText() + '.json'
+            bot_ = Bot(current_user)
+            bot_.find_items()
 
 
 class Bot:
-    def __init__(self, current_user, drop_time):
+    def __init__(self, current_user):
         self.current_user = current_user
-        self.drop_time = drop_time
 
         self.headers = {
             "Authority": "www.supremenewyork.com",
@@ -121,6 +127,11 @@ class Bot:
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)"
         }
+
+        chrome_options = Chrome.Options()
+        chrome_options.add_argument("--headless")
+        self.browser = Chrome(os.path.dirname(os.path.realpath(__file__)) + '/chromedriver',
+                              chrome_options=chrome_options)
 
 
     # получаем информацию о пользователе из файла
@@ -225,16 +236,15 @@ class Bot:
             'hpcvv': ''
         }
 
-        browser = Chrome(os.path.dirname(os.path.realpath(__file__)) + '/chromedriver')
-        browser.get(url='https://www.supremenewyork.com/shop/cart')
-        browser.delete_all_cookies()
+        self.browser.get(url='https://www.supremenewyork.com/shop/cart')
+        self.browser.delete_all_cookies()
 
         for key, value in requests.utils.dict_from_cookiejar(response.cookies).items():
-            browser.add_cookie({'name': key, 'value': value})
+            self.browser.add_cookie({'name': key, 'value': value})
 
-        browser.refresh()
-        browser.get(url='https://www.supremenewyork.com/checkout')
-        response = browser.request('POST', 'https://www.supremenewyork.com/checkout', data=form_data)
+            self.browser.refresh()
+            self.browser.get(url='https://www.supremenewyork.com/checkout')
+        response = self.browser.request('POST', 'https://www.supremenewyork.com/checkout', data=form_data)
 
         print(response.content)
 
@@ -306,7 +316,7 @@ class Bot:
     def choose_size_and_color(element, item_info):
         print('**************Choosing color and size**************')
         # Приоритетные цвета, если цвет не задан или задан любой цвет
-        priority_colors = ['White', 'Black', 'Red', 'Green', 'Blue']
+        priority_colors = ['Black', 'Green']
 
         # Представленные в магазине цвета по данной вещи
         represented_colors = item_info['styles']

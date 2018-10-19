@@ -12,15 +12,27 @@ from bot_help import BotHelpWindow
 from bot import BotWindow
 
 
+#TODO: create droplists combobox
+
 class SupremeApp(QWidget):
     def __init__(self):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+        self.parser_ = Parser()
+
         super(SupremeApp, self).__init__()
         horizbox = QHBoxLayout()
         vertbox = QVBoxLayout()
 
         #             buttons               #
-        self.init_user_btn = QPushButton('Users Actions', self)
+        self.change_droplist = QComboBox()
+        self.change_droplist.addItems(['16th August 18', '20th August 18', '30th August 18',
+                                       '6th September 18', '13th September 18', '20th September 18',
+                                       '27th September 18', '4th October 18', '11th October 18',
+                                       '18th October 18'])
+        self.change_droplist.setObjectName('droplists_box')
+        self.change_droplist.setFixedSize(200, 30)
+
+        self.init_user_btn = QPushButton('User Actions', self)
         self.connect(self.init_user_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_user_info_modal_window())
@@ -51,6 +63,18 @@ class SupremeApp(QWidget):
         horizbox.addWidget(self.bot_help_btn)
         horizbox.addWidget(self.start_btn)
 
+        self.init_user_btn.setProperty('class', 'custom_button')
+        self.cart_btn.setProperty('class', 'custom_button')
+        self.sizing_btn.setProperty('class', 'custom_button')
+        self.bot_help_btn.setProperty('class', 'custom_button')
+        self.start_btn.setProperty('class', 'custom_button')
+
+        self.init_user_btn.setCursor(Qt.PointingHandCursor)
+        self.cart_btn.setCursor(Qt.PointingHandCursor)
+        self.sizing_btn.setCursor(Qt.PointingHandCursor)
+        self.bot_help_btn.setCursor(Qt.PointingHandCursor)
+        self.start_btn.setCursor(Qt.PointingHandCursor)
+
         #            items field            #
         self.field_layout = QGridLayout()
 
@@ -62,6 +86,8 @@ class SupremeApp(QWidget):
         self.items_field = QScrollArea()
         self.items_field.setWidget(area)
         self.items_field.show()
+
+        vertbox.addWidget(self.change_droplist)
         vertbox.addWidget(self.items_field)
         vertbox.addLayout(horizbox)
 
@@ -111,16 +137,13 @@ class SupremeApp(QWidget):
 
 
     def create_table(self):
-        # initializing parser
-        parser_ = Parser()
-
         # parse_main_window_content() method first checks if latest drop has been changed
         # to do that, method finds a link to the latest droplist and compares it with a link that is saved in 'latest.txt'
         # if links differ, it parses droplist from community and saves it to json dump
         # also it writes down last used link to 'latest.txt'
 
         print('Checking for drop updates. Please, be patient!')
-        # parser_.parse_main_window_content()
+        # self.parser_.parse_main_window_content()
 
         # reading content from dump
         with open('json/current_drop.json', mode='r') as fin:
@@ -135,6 +158,8 @@ class SupremeApp(QWidget):
             btn = QPushButton()
             btn.setIcon(QIcon('img/main/' + str(index)))
             btn.setIconSize(QSize(200, 200))
+            btn.setProperty('class', 'item_button')
+            btn.setCursor(Qt.PointingHandCursor)
 
             self.field_layout.addWidget(btn, row, column)
             if column == 4:
@@ -158,3 +183,6 @@ class SupremeApp(QWidget):
         self.connect(button,
                      SIGNAL('clicked()'),
                      lambda: self.create_item_modal_window(self.drop[index]))
+
+    def refresh_droplists(self):
+        pass

@@ -36,7 +36,9 @@ if __name__ == "__main__":
 
     GUI = supreme_app.SupremeApp()
     splash.finish(GUI)
-
+    stylesheet = "qss/style.stylesheet"
+    with open(stylesheet, "r") as ss:
+        app.setStyleSheet(ss.read())
     app.exec_()
 
 

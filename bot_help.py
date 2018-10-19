@@ -116,9 +116,6 @@ class BotHelpWindow(QDialog):
         self.info_label_4.setVisible(False)
         self.info_label_5.setVisible(False)
 
-        # switching labels visibility on button click
-        self.connect_buttons()
-
         # placing elements
         self.info_list_layout.addWidget(self.info_button_1)
         self.info_list_layout.addWidget(self.info_label_1)
@@ -138,11 +135,22 @@ class BotHelpWindow(QDialog):
         self.area.setLayout(self.info_list_layout)
 
         self.scroll_area = QScrollArea()
-        # self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area.setWidget(self.area)
+
+        # below buttons
+        self.horizbox = QHBoxLayout()
+        self.settings_button = QPushButton('Settings')
+        self.exit_button = QPushButton('Close')
 
         # adding scroll area to main layout
         self.layout.addWidget(self.scroll_area)
+        self.horizbox.addWidget(self.settings_button)
+        self.horizbox.addWidget(self.exit_button)
+
+        self.layout.addLayout(self.horizbox)
+
+        # switching labels visibility on button click
+        self.connect_buttons()
 
         # window settings
         self.bot_help_window.setLayout(self.layout)
@@ -174,6 +182,14 @@ class BotHelpWindow(QDialog):
                      SIGNAL('clicked()'),
                      lambda: self.switch_visibility(self.info_label_5))
 
+        self.connect(self.exit_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.bot_help_window.close())
+
+        self.connect(self.settings_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.cfg())
+
 
     def switch_visibility(self, label):
         # if label visible - make it hidden and visa versa
@@ -183,3 +199,49 @@ class BotHelpWindow(QDialog):
         else:
             label.setVisible(True)
             self.area.setFixedHeight(self.area.height() + label.height())
+
+    def cfg(self):
+        cfg_window = Configuration()
+
+
+class Configuration(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.scriptDir = os.path.dirname(os.path.realpath(__file__))
+        self.settings_window = QDialog()
+        self.layout = QVBoxLayout()
+        self.layout.setContentsMargins(5, 5, 5, 5)
+
+        self.contents_layout = QVBoxLayout()
+
+        # setting scroll area
+        self.area = QWidget()
+        self.area.setFixedWidth(280)
+        self.area.setFixedHeight(250)
+        self.area.setLayout(self.contents_layout)
+
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidget(self.area)
+        self.layout.addWidget(self.scroll_area)
+
+        self.save_button = QPushButton('Save')
+        self.exit_button = QPushButton('Close')
+
+        self.horizbox = QHBoxLayout()
+        self.horizbox.addWidget(self.save_button)
+        self.horizbox.addWidget(self.exit_button)
+
+        self.layout.addLayout(self.horizbox)
+
+        self.connect_buttons()
+        self.settings_window.setLayout(self.layout)
+        self.settings_window.setFixedSize(300, 350)
+        self.settings_window.setWindowTitle("Bot Config")
+        self.settings_window.setModal(True)
+        self.settings_window.exec_()
+
+    def connect_buttons(self):
+
+        self.connect(self.exit_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.settings_window.close())

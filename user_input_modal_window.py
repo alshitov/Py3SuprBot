@@ -9,7 +9,8 @@ class UserInfoModalWindow(QDialog):
     def __init__(self):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
         super().__init__()
-        self.dialog_window = QDialog(self)
+        self.user_actions_window = QDialog(self)
+        self.user_actions_window.setObjectName('user_window')
         self.layout = QVBoxLayout()
 
         self.logo_label = QLabel()
@@ -57,11 +58,16 @@ class UserInfoModalWindow(QDialog):
         self.grid.addWidget(self.card_month_combo,   2, 2, 1, 1)
         self.grid.addWidget(self.card_year_combo,    2, 3, 1, 1)
         self.grid.addWidget(self.card_cvv_input,     2, 4, 1, 1)
-        self.grid.addWidget(self.cancel_button,      6, 2, 1, 1)
-        self.grid.addWidget(self.save_button,        6, 3, 1, 2)
-        self.grid.addWidget(self.users_list_combo,   5, 2, 1, 1)
-        self.grid.addWidget(self.load_user_button,   5, 3, 1, 1)
-        self.grid.addWidget(self.delete_user_button, 5, 4, 1, 1)
+
+        self.grid.addWidget(QLabel('<b>Manage users: </b>'),
+                                                     3, 2, 1, 3)
+        self.grid.addWidget(self.users_list_combo,   4, 2, 1, 3)
+
+        self.grid.addWidget(self.load_user_button,   5, 4, 1, 1)
+        self.grid.addWidget(self.delete_user_button, 5, 2, 1, 2)
+
+        self.grid.addWidget(self.cancel_button,      6, 2, 1, 2)
+        self.grid.addWidget(self.save_button,        6, 4, 1, 1)
 
         #        setting parameters for user inputs      #
         self.name_input.setPlaceholderText("Full name")
@@ -97,6 +103,16 @@ class UserInfoModalWindow(QDialog):
         self.save_button.setText('Accept And Save')
         self.load_user_button.setText('Load')
         self.delete_user_button.setText('Delete')
+
+        self.cancel_button.setProperty('class', 'custom_button')
+        self.save_button.setProperty('class', 'custom_button')
+        self.load_user_button.setProperty('class', 'custom_button')
+        self.delete_user_button.setProperty('class', 'custom_button')
+
+        self.cancel_button.setCursor(Qt.PointingHandCursor)
+        self.save_button.setCursor(Qt.PointingHandCursor)
+        self.load_user_button.setCursor(Qt.PointingHandCursor)
+        self.delete_user_button.setCursor(Qt.PointingHandCursor)
 
         #           setting validators           #
         self.onlyInt = QIntValidator()
@@ -141,11 +157,12 @@ class UserInfoModalWindow(QDialog):
 
         self.load_users_list()
 
-        self.dialog_window.setLayout(self.layout)
-        self.dialog_window.setFixedSize(656, 369)
-        self.dialog_window.setWindowTitle("User billing information")
-        self.dialog_window.setModal(True)
-        self.dialog_window.exec_()
+        self.user_actions_window.setLayout(self.layout)
+        self.user_actions_window.setFixedSize(656, 369)
+        self.user_actions_window.setWindowTitle("User billing information")
+        self.user_actions_window.setModal(True)
+        self.setFocus()
+        self.user_actions_window.exec_()
 
 
     def warning(self, option):
@@ -187,7 +204,7 @@ class UserInfoModalWindow(QDialog):
 
     def quit(self):
         self.accept_dialog.close()
-        self.dialog_window.close()
+        self.user_actions_window.close()
 
 
     def save_user_info(self):
@@ -208,13 +225,13 @@ class UserInfoModalWindow(QDialog):
             'card_cvv': str(self.card_cvv_input.text())
         }
 
-        if any(user[field] == '' for field in user):
-            print('Input Error!')
+        if self.name_input.text() == '':
+            print('input Error!')
         else:
             dump_name = 'json/user_' + '_'.join(user['name'].split(' ')) + '.json'
             with open(dump_name, mode='w', encoding='utf-8') as f:
                 json.dump(user, f)
-            self.dialog_window.close()
+            self.user_actions_window.close()
 
 
     def load_users_list(self):
