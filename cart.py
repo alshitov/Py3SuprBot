@@ -37,6 +37,7 @@ class Cart(QDialog):
 
         # placing items
         self.area = QWidget()
+        self.area.setProperty('class', 'scroll_area')
         self.area.setLayout(self.items_list_layout)
         self.items_area = QScrollArea()
         self.items_area.setWidget(self.area)
@@ -52,7 +53,7 @@ class Cart(QDialog):
         self.remember_button.setFixedWidth(150)
 
         self.cart_window.setLayout(self.layout)
-        self.cart_window.setFixedSize(820, 550)
+        self.cart_window.setFixedSize(840, 550)
         self.cart_window.setWindowTitle("Cart")
         self.cart_window.setModal(True)
         self.cart_window.exec_()
@@ -64,6 +65,7 @@ class Cart(QDialog):
 
         for item in items:
             self.item_box = QWidget()
+            self.item_box.setProperty('class', 'item_box')
             self.item_layout = QHBoxLayout()
 
             self.item_image_label = QLabel()

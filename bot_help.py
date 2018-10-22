@@ -121,6 +121,7 @@ class BotHelpWindow(QDialog):
 
         # setting scroll area
         self.area = QWidget()
+        self.area.setProperty('class', 'scroll_area')
         self.area.setFixedWidth(680)
         self.area.setFixedHeight(200)
         self.area.setLayout(self.info_list_layout)

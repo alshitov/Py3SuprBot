@@ -7,22 +7,31 @@ QPushButton.item_button {
     border: 1px solid grey;
 }
 
-QPushButton.custom_button {
+QDialog, QScrollArea, QLabel, QWidget.scroll_area {
+    background-color: white;
+}
+
+QDialog QPushButton, QPushButton.custom_button {
     height: 30px;
     color: black;
     background-color: white;
     border: 1px solid grey;
 }
 
-QPushButton.custom_button:hover {
+QDialog QPushButton:hover, QPushButton.custom_button:hover {
     color: white;
     background-color: red;
 }
 
-QDialog#user_window{
-    background-color: white;
+QDialog QLineEdit {
+    height: 30px;
+    border: 1px solid gray;
 }
 
-QDialog#user_window QLineEdit, QComboBox{
-    height: 15px;
+QWidget.item_box {
+    border: 1px solid gray;
+}
+
+QWidget#main_window {
+    background-color: white;
 }

@@ -82,6 +82,7 @@ class SupremeApp(QWidget):
         self.create_table()
 
         area = QWidget()
+        area.setProperty('class', 'scroll_area')
         area.setLayout(self.field_layout)
         self.items_field = QScrollArea()
         self.items_field.setWidget(area)
@@ -93,7 +94,7 @@ class SupremeApp(QWidget):
 
         #           main window           #
         self.setLayout(vertbox)
-
+        self.setProperty('id', 'main_window')
         self.setFixedWidth(1200)
         self.setGeometry(0,0,0,675)
         self.center()
