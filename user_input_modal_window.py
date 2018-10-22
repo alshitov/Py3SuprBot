@@ -99,10 +99,11 @@ class UserInfoModalWindow(QDialog):
         self.years = ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028']
         self.card_year_combo.addItems(self.years)
 
-        self.cancel_button.setText('Cancel')
-        self.save_button.setText('Accept And Save')
         self.load_user_button.setText('Load')
         self.delete_user_button.setText('Delete')
+        self.cancel_button.setText('Cancel')
+        self.save_button.setText('Accept And Save')
+
 
         self.cancel_button.setProperty('class', 'custom_button')
         self.save_button.setProperty('class', 'custom_button')

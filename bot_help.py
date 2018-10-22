@@ -41,7 +41,6 @@ class BotHelpWindow(QDialog):
         # text infos
         how_to_colors = '\n'.join(['When filling in "Choose color" field, you have the following options:\n' ,
                                   'Color_1, Color_2, ... \t= Include(add) colors to list. Priority by index in list.',
-                                  '!Color \t\t\t= Exclude(forbid) particular color.',
                                   'Any \t\t\t= Choose first available color.'
                                    ])
 
@@ -60,16 +59,8 @@ class BotHelpWindow(QDialog):
         how_to_sizes = '\n'.join(['First, go to Sizing Help and examine individual Supreme sizings on item you are interested in.',
                                   '\nWhen filling in "Choose size" field, you have the following options same as "Choose color" options:\n',
                                   'Size_1, Size_2, ... \t\t= Include(add) sizes to list. Priority by index in list.',
-                                  '!Size \t\t\t= Exclude(forbid) particular size.',
                                   'Any \t\t\t= Choose first available size.'
                                   ])
-        # pref_sizes
-        # Any - bot selects first size in a list (which is actually the smallest available one)
-        # Small - particular
-        # Medium - particular
-        # Large - particular
-        # XLarge - particular
-        # Biggest - bot selects the biggest available size in a list
 
         how_to_cart = '\n'.join(['1. Press "Delete" button to delete item from basket.',
                                  '2. Specify items priority by choosing the corresponding index in dropdown list next to price label. '

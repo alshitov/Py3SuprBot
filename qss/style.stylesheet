@@ -23,6 +23,6 @@ QDialog#user_window{
     background-color: white;
 }
 
-QDialog#user_window QLineEdit{
-    height: 30px;
+QDialog#user_window QLineEdit, QComboBox{
+    height: 15px;
 }
