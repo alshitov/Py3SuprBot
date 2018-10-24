@@ -20,20 +20,20 @@
 >`# python3 Py3SuprBot.py`
 
 # Screenshots  
-**Main window**
+**Main window**  
 ![screen](https://raw.githubusercontent.com/ympo2oo2/Py3SuprBot/master/img/screenshots/main.png) 
 
-**User Actions**
+**User Actions**  
 ![screen](https://raw.githubusercontent.com/ympo2oo2/Py3SuprBot/master/img/screenshots/users.png) 
 
-**Basket**
+**Basket**  
 ![screen](https://raw.githubusercontent.com/ympo2oo2/Py3SuprBot/master/img/screenshots/cart.png) 
 
-**Sizings**
+**Sizings**  
 ![screen](https://raw.githubusercontent.com/ympo2oo2/Py3SuprBot/master/img/screenshots/sizings.png)
 
-**Bot Help**
+**Bot Help**  
 ![screen](https://raw.githubusercontent.com/ympo2oo2/Py3SuprBot/master/img/screenshots/help.png)
 
-**Process Payment**
+**Process Payment**  
 ![screen](https://raw.githubusercontent.com/ympo2oo2/Py3SuprBot/master/img/screenshots/process.png) 
