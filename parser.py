@@ -138,14 +138,13 @@ class Parser():
                 curr_link = f.read().strip()
 
             # if latest link has been changed - that means new items has been dropped
-            if link_to_items == curr_link:
+            if link_to_items != curr_link:
                 print('Found drop update! Processing...')
                 # first, write down current link to local storage
                 with open('txt/latest.txt', mode='w') as f:
                     f.write(link_to_items)
 
                 # get to latest(future) froplist
-                link_to_items = 'https://supremecommunity.com/season/fall-winter2018/droplist/2018-10-18/'
                 html = self.get_html(link_to_items, self.headers, self.proxies)
 
                 # re-init bs object with new content
