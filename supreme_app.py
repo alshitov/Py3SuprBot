@@ -12,8 +12,6 @@ from bot_help import BotHelpWindow
 from bot import BotWindow
 
 
-#TODO: create droplists combobox
-
 class SupremeApp(QWidget):
     def __init__(self):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
@@ -31,6 +29,13 @@ class SupremeApp(QWidget):
                                        '18th October 18'])
         self.change_droplist.setObjectName('droplists_box')
         self.change_droplist.setFixedSize(200, 30)
+
+        self.update_button = QPushButton('Check for updates')
+        self.update_button.setFixedSize(200, 30)
+        self.update_button.setProperty('class', 'custom_button')
+        self.connect(self.update_button,
+                     SIGNAL('clicked()'),
+                     lambda: self.parse_content())
 
         self.init_user_btn = QPushButton('User Actions')
         self.connect(self.init_user_btn,
@@ -88,6 +93,7 @@ class SupremeApp(QWidget):
         self.items_field.setWidget(area)
         self.items_field.show()
 
+        vertbox.addWidget(self.update_button)
         vertbox.addWidget(self.change_droplist)
         vertbox.addWidget(self.items_field)
         vertbox.addLayout(horizbox)
@@ -136,16 +142,15 @@ class SupremeApp(QWidget):
     def start_bot(self):
         bot_window = BotWindow()
 
-
-    def create_table(self):
+    def parse_content(self):
         # parse_main_window_content() method first checks if latest drop has been changed
         # to do that, method finds a link to the latest droplist and compares it with a link that is saved in 'latest.txt'
         # if links differ, it parses droplist from community and saves it to json dump
         # also it writes down last used link to 'latest.txt'
-
         print('Checking for drop updates. Please, be patient!')
         self.parser_.parse_main_window_content()
 
+    def create_table(self):
         # reading content from dump
         with open('json/current_drop.json', mode='r') as fin:
             self.drop = json.load(fin)
