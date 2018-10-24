@@ -210,7 +210,7 @@ class Parser():
                     print("Success!")
             except requests.exceptions.ConnectionError:
                 print('Proxy is down... Trying next...')
-                self.download_images()
+                continue
 
         # when images downloaded, resize them and save copies
         resize.resize_images()

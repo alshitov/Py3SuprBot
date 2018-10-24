@@ -19,19 +19,7 @@ class BotHelpWindow(QDialog):
         self.info_button_2 = QPushButton("How to choose sizings?")
         self.info_button_3 = QPushButton("How to manage users?")
         self.info_button_4 = QPushButton("Work with cart")
-        self.info_button_5 = QPushButton("Info5")
-
-        '''        if arguments['type'] == 'shoes':
-            sizes = ['US 9 / UK 8', 'US 9.5 / UK 8.5',
-                     'US 10 / UK 9', 'US 10.5 / UK 9.5',
-                     'US 11 / UK 10', 'US 11.5 / UK 10.5',
-                     'US 12 / UK 11', 'US 13 / UK 12']
-        elif arguments['type'] == 'hats':
-            sizes = ['S/M', 'M/L']
-        elif arguments['type'] == 'bags':
-            self.size_combo.setVisible(False)
-        else:
-            sizes = ['30', '32','34', '36', 'Small', 'Medium', 'Lagre', 'XLarge']'''
+        self.info_button_5 = QPushButton("Drop time")
 
         self.logo_label = QLabel()
         self.logo_label.setAlignment(Qt.AlignHCenter)
@@ -40,38 +28,35 @@ class BotHelpWindow(QDialog):
 
         # text infos
         how_to_colors = '\n'.join(['When filling in "Choose color" field, you have the following options:\n' ,
-                                  'Color_1, Color_2, ... \t= Include(add) colors to list. Priority by index in list.',
-                                  'Any \t\t\t= Choose first available color.'
+                                  '▶ Color_1, Color_2, ... \t= Include(add) colors to list. Priority by index in list.',
+                                  '▶ Any \t\t\t= Choose first available color.'
                                    ])
 
-        how_to_users = '\n'.join(['When choosing/adding user:\n',
-                                  '1. Steps to define your billing information (only if you have not done it earlier):',
-                                  '    - fill in every field',
+        how_to_users = '\n'.join(['▶ When choosing/adding user:\n',
+                                  '▶ Steps to define your billing information (only if you have not done it earlier):',
+                                  '    - fill in information fields',
                                   '    - press "Accept and Save"',
-                                  '    - your data will be written into json file named as Your_Name',
-                                  '2. Press "Cancel" to close window.',
-                                  '3. Choose your name from the saved users list and press "Load" to check if your billing information is correct.',
+                                  '    - your data will be saved in json file named as Name_Surname',
+                                  '▶ Press "Cancel" to close window.',
+                                  '▶ Choose your name from the saved users list and press "Load" to check if your billing information is correct.',
                                   '    3.1. Make corrections and press "Accept And Save" if your have changed some piece of data.',
                                   '           Information will be overwritten.',
-                                  '4. Choose your name from the saved users list and press "Delete" to remove your billing information.'
+                                  '▶ Choose your name from the saved users list and press "Delete" to remove your billing information.'
                                   ])
 
         how_to_sizes = '\n'.join(['First, go to Sizing Help and examine individual Supreme sizings on item you are interested in.',
                                   '\nWhen filling in "Choose size" field, you have the following options same as "Choose color" options:\n',
-                                  'Size_1, Size_2, ... \t\t= Include(add) sizes to list. Priority by index in list.',
-                                  'Any \t\t\t= Choose first available size.'
+                                  '▶ Size_1, Size_2, ... \t\t= Include(add) sizes to list. Priority by index in list.',
+                                  '▶ Any \t\t\t= Choose first available size.'
                                   ])
 
-        how_to_cart = '\n'.join(['1. Press "Delete" button to delete item from basket.',
-                                 '2. Specify items priority by choosing the corresponding index in dropdown list next to price label. '
+        how_to_cart = '\n'.join(['▶ Press "Delete" button to delete item from basket.',
+                                 '▶ Specify items priority by choosing the corresponding index in dropdown list next to price label. '
                                  'Then click "Remember Choice" to remember priorities.'])
 
-        self.info1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
-                    "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim " \
-                    "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea " \
-                    "commodo consequat. Duis aute irure dolor in reprehenderit in voluptate " \
-                    "velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat " \
-                    "cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        how_to_time = '\n'.join(['▶ When starting the Bot, you are to specify drop time (12-hour format).',
+                                 '▶ I recommend setting 1 minute earlier official drop time. '
+                                 'The Bot will start refreshing stock every 0.5 sec. and will buy your desired item in time.'])
 
         # creating labels
         self.info_label_1 = QLabel()
@@ -89,7 +74,7 @@ class BotHelpWindow(QDialog):
 
         self.info_label_1.setFixedHeight(100)
         self.info_label_2.setFixedHeight(180)
-        self.info_label_3.setFixedHeight(260)
+        self.info_label_3.setFixedHeight(270)
         self.info_label_4.setFixedHeight(80)
         self.info_label_5.setFixedHeight(100)
 
@@ -98,7 +83,7 @@ class BotHelpWindow(QDialog):
         self.info_label_2.setText(how_to_sizes)
         self.info_label_3.setText(how_to_users)
         self.info_label_4.setText(how_to_cart)
-        self.info_label_5.setText(self.info1)
+        self.info_label_5.setText(how_to_time)
 
         # original labels state - non visible
         self.info_label_1.setVisible(False)

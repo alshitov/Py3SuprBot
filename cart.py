@@ -91,7 +91,7 @@ class Cart(QDialog):
                 self.priority_combo.setCurrentIndex(priority_combo_items.index(item['priority']))
 
             # sizing elements
-            self.item_details_label.setFixedWidth(250)
+            self.item_details_label.setFixedWidth(280)
             self.item_details_label.setWordWrap(True)
             self.item_details_label.setAlignment(Qt.AlignVCenter)
             self.item_details_label.setContentsMargins(15, 0, 15, 0)
@@ -102,6 +102,7 @@ class Cart(QDialog):
             self.item_box.setFixedHeight(220)
 
             self.item_box.setLayout(self.item_layout)
+            self.item_box.setFixedWidth(780)
             self.items_list_layout.addWidget(self.item_box)
 
 

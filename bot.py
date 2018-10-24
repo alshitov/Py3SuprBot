@@ -414,7 +414,6 @@ class Bot:
                             for size in color['sizes']:
                                 if size['name'] in element['size'] and size['stock_level'] is not 0:
                                     return {'color_id': color['id'], 'size_id': size['id']}
-
         # Конец выбора
 
         # Если предмет не найден
@@ -442,7 +441,6 @@ class Bot:
                         color_and_size = self.choose_size_and_color(element, item_info)
                         if color_and_size['color_id'] is None or color_and_size['size_id'] is None:
                             print('Desired item has been sold out')
-                            # TODO: create algorithm(add to bot config) that will buy item with any color and size if desired item was sold out
                         else:
                             requests_data.append([item['id'], color_and_size['color_id'], color_and_size['size_id'], price])
 

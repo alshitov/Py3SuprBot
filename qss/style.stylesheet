@@ -5,9 +5,10 @@ QWidget {
 QPushButton.item_button {
     background-color: white;
     border: 1px solid grey;
+    border-radius: 3px;
 }
 
-QDialog, QScrollArea, QLabel, QWidget.scroll_area {
+QDialog, QScrollArea, QLabel, QWidget.scroll_area, QWidget#main_window {
     background-color: white;
 }
 
@@ -16,6 +17,7 @@ QDialog QPushButton, QPushButton.custom_button {
     color: black;
     background-color: white;
     border: 1px solid grey;
+    border-radius: 3px;
 }
 
 QDialog QPushButton:hover, QPushButton.custom_button:hover {
@@ -26,12 +28,14 @@ QDialog QPushButton:hover, QPushButton.custom_button:hover {
 QDialog QLineEdit {
     height: 30px;
     border: 1px solid gray;
+    border-radius: 3px;
 }
 
 QWidget.item_box {
     border: 1px solid gray;
+    border-radius: 3px;
 }
 
-QWidget#main_window {
-    background-color: white;
+QComboBox:checked {
+    background-color: red;
 }
