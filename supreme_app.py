@@ -32,27 +32,27 @@ class SupremeApp(QWidget):
         self.change_droplist.setObjectName('droplists_box')
         self.change_droplist.setFixedSize(200, 30)
 
-        self.init_user_btn = QPushButton('User Actions', self)
+        self.init_user_btn = QPushButton('User Actions')
         self.connect(self.init_user_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_user_info_modal_window())
 
-        self.cart_btn = QPushButton('Cart', self)
+        self.cart_btn = QPushButton('Cart')
         self.connect(self.cart_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_cart_window())
 
-        self.sizing_btn = QPushButton('Sizing Help', self)
+        self.sizing_btn = QPushButton('Sizing Help')
         self.connect(self.sizing_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_sizing_help_window())
 
-        self.bot_help_btn = QPushButton('Bot Help', self)
+        self.bot_help_btn = QPushButton('Bot Help')
         self.connect(self.bot_help_btn,
                      SIGNAL('clicked()'),
                      lambda: self.create_bot_help_window())
 
-        self.start_btn = QPushButton('Start Bot', self)
+        self.start_btn = QPushButton('Start Bot')
         self.connect(self.start_btn,
                      SIGNAL('clicked()'),
                      lambda: self.start_bot())
@@ -144,7 +144,7 @@ class SupremeApp(QWidget):
         # also it writes down last used link to 'latest.txt'
 
         print('Checking for drop updates. Please, be patient!')
-        # self.parser_.parse_main_window_content()
+        self.parser_.parse_main_window_content()
 
         # reading content from dump
         with open('json/current_drop.json', mode='r') as fin:
