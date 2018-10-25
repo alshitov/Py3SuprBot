@@ -6,13 +6,7 @@ from re import search, findall
 from re import split as re_s
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
 from seleniumrequests import Chrome
-
 
 
 class BotWindow(QDialog):
@@ -114,7 +108,6 @@ class BotWindow(QDialog):
 class Bot:
     def __init__(self, current_user):
         self.current_user = current_user
-
         self.headers = {
             "Authority": "www.supremenewyork.com",
             "Method": "GET",
@@ -151,14 +144,17 @@ class Bot:
 
     # получаем список всех вещей, находящихся на данный момент в продаже
     def fetch_stock(self):
+        print(self.utc_to_est(), '-----> Fetching stock.')
         return requests.request('GET', 'http://www.supremenewyork.com/mobile_stock.json', headers=self.headers).json()
 
 
     def get_item_info(self, id):
+        print(self.utc_to_est(), '-----> Getting item info.')
         return requests.request('GET', 'http://www.supremenewyork.com/shop/{}.json'.format(id), headers=self.headers).json()
 
 
     def pure_cart_generator(self, data):
+        print(self.utc_to_est(), '-----> Generating cart.')
         sizes = ''
         total = 0
         sizes_colors = ''
@@ -179,6 +175,7 @@ class Bot:
 
 
     def checkout(self, response, data):
+        print(self.utc_to_est(), '-----> Checkout.')
         sess = cart = ''
 
         for item in re_s('[;,]', response.headers['Set-Cookie']):
@@ -211,6 +208,7 @@ class Bot:
         auth_r = requests.post(url=url, headers=headers, timeout=2)
 
         x_csrf_token = findall('<meta name="csrf-token" content="(.*==)" />', auth_r.text)[0]
+        print(self.utc_to_est(), '-----> Done.')
 
         user = self.get_user_billing_info(self.current_user)
 
@@ -236,36 +234,24 @@ class Bot:
             'hpcvv': ''
         }
 
+        print(self.utc_to_est(), '-----> Opening browser.')
         self.browser.get(url='https://www.supremenewyork.com/shop/cart')
         self.browser.delete_all_cookies()
 
         for key, value in requests.utils.dict_from_cookiejar(response.cookies).items():
             self.browser.add_cookie({'name': key, 'value': value})
 
-            self.browser.refresh()
-            self.browser.get(url='https://www.supremenewyork.com/checkout')
+        print(self.utc_to_est(), '-----> Refreshing browser.')
+        self.browser.refresh()
+        print(self.utc_to_est(), '-----> Checkout request.')
+        self.browser.get(url='https://www.supremenewyork.com/checkout')
         response = self.browser.request('POST', 'https://www.supremenewyork.com/checkout', data=form_data)
-
+        print(self.utc_to_est(), '-----> Done.')
         print(response.content)
-
-    @staticmethod
-    def show_cookies(response):
-        cookie_dict_wrapper = []
-        for key, value in requests.utils.dict_from_cookiejar(response.cookies).items():
-            dict_template = {
-                'domain': '.supremenewyork.com',
-                'expiry': int(time.time()+7200),
-                'httpOnly': False,
-                'path': '/',
-                'secure': False,
-                'name': key,
-                'value': value
-            }
-            cookie_dict_wrapper.append(dict_template)
-        print('Cookies:', json.dumps(cookie_dict_wrapper, indent=4))
 
 
     def add_to_cart(self, data):
+        print(self.utc_to_est(), '-----> Adding to cart.')
         print('Adding to cart...')
         response = None
         cookies = {}
@@ -307,14 +293,11 @@ class Bot:
                                         cookies=cookies)
             cookies = response.cookies
 
-
-        # self.show_cookies(response)
         self.checkout(response, data)
 
 
-    @staticmethod
-    def choose_size_and_color(element, item_info):
-        print('**************Choosing color and size**************')
+    def choose_size_and_color(self, element, item_info):
+        print(self.utc_to_est(), '-----> Choosing color and size.')
         # Приоритетные цвета, если цвет не задан или задан любой цвет
         priority_colors = ['Black', 'Green']
 
@@ -337,12 +320,14 @@ class Bot:
                         for size in color['sizes']:
                             # Проверка только на доступность данного размера
                             if size['stock_level'] is not 0:
+                                print(self.utc_to_est(), '-----> Found (323).')
                                 return {'color_id': color['id'], 'size_id': size['id']}
                     # Размер выставлен
                     else:
                         for size in color['sizes']:
                             # Проверка на доступность данного размера и на присутствие его в списке пользователя
                             if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                print(self.utc_to_est(), '-----> Found (330).')
                                 return {'color_id': color['id'], 'size_id': size['id']}
             # Если не найдено в приоритетных - идем по всем
             else:
@@ -352,17 +337,20 @@ class Bot:
                         if size_is_not_set:
                             for size in color['sizes']:
                                 if size['stock_level'] is not 0:
+                                    print(self.utc_to_est(), '-----> Found (340).')
                                     return {'color_id': color['id'], 'size_id': size['id']}
                         # Размер выставлен
                         else:
                             for size in color['sizes']:
                                 # Проверка на доступность данного размера и на присутствие его в списке пользователя
                                 if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                    print(self.utc_to_est(), '-----> Found (347).')
                                     return {'color_id': color['id'], 'size_id': size['id']}
                 else:
                     for color in represented_colors:
                         for size in color['sizes']:
                             if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                print(self.utc_to_est(), '-----> Found (353).')
                                 return {'color_id': color['id'], 'size_id': size['id']}
 
         # Цвет задан
@@ -376,12 +364,14 @@ class Bot:
                         for size in color['sizes']:
                             # Проверка только на доступность данного размера
                             if size['stock_level'] is not 0:
+                                print(self.utc_to_est(), '-----> Found (367).')
                                 return {'color_id': color['id'], 'size_id': size['id']}
                     # Размер выставлен
                     else:
                         for size in color['sizes']:
                             # Проверка на доступность данного размера и на присутствие его в списке пользователя
                             if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                print(self.utc_to_est(), '-----> Found (374).')
                                 return {'color_id': color['id'], 'size_id': size['id']}
             # Ни одного пользовательского цвета не найдено - идем по приоритетным
             else:
@@ -394,12 +384,14 @@ class Bot:
                             for size in color['sizes']:
                                 # Проверка только на доступность данного размера
                                 if size['stock_level'] is not 0:
+                                    print(self.utc_to_est(), '-----> Found (387).')
                                     return {'color_id': color['id'], 'size_id': size['id']}
                         # Размер выставлен
                         else:
                             for size in color['sizes']:
                                 # Проверка на доступность данного размера и на присутствие его в списке пользователя
                                 if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                    print(self.utc_to_est(), '-----> Found (394).')
                                     return {'color_id': color['id'], 'size_id': size['id']}
                 # Если не найдено в приоритетных - идем по всем
                 else:
@@ -408,15 +400,18 @@ class Bot:
                             if size_is_not_set:
                                 for size in color['sizes']:
                                     if size['stock_level'] is not 0:
+                                        print(self.utc_to_est(), '-----> Found (403).')
                                         return {'color_id': color['id'], 'size_id': size['id']}
                     else:
                         for color in represented_colors:
                             for size in color['sizes']:
                                 if size['name'] in element['size'] and size['stock_level'] is not 0:
+                                    print(self.utc_to_est(), '-----> Found (409).')
                                     return {'color_id': color['id'], 'size_id': size['id']}
         # Конец выбора
 
         # Если предмет не найден
+        print(self.utc_to_est(), '-----> Not found.')
         return {'color_id': None, 'size_id': None}
 
 
@@ -428,19 +423,20 @@ class Bot:
 
             item_found = False
             while not item_found:
-                print('Refreshing stock.')
+                print(self.utc_to_est(), '-----> Refreshing stock.')
                 # вещи, доступные на сайте
                 stock = self.fetch_stock()
                 element['type'] = 'Tops/Sweaters' if element['type'] == 'tops-sweaters' else element['type'].title()
                 for item in stock['products_and_categories'][element['type']]:
                     if item['name'] == element['name']:
+                        print(self.utc_to_est(), '-----> {} found.'.format(element['name']))
                         item_found = True
                         price = round(item['price_euro'] / 100)
                         print(price)
                         item_info = self.get_item_info(item['id'])
                         color_and_size = self.choose_size_and_color(element, item_info)
                         if color_and_size['color_id'] is None or color_and_size['size_id'] is None:
-                            print('Desired item has been sold out')
+                            print(self.utc_to_est(), '-----> Desired item has been sold out.')
                         else:
                             requests_data.append([item['id'], color_and_size['color_id'], color_and_size['size_id'], price])
 
@@ -448,3 +444,8 @@ class Bot:
 
         if len(requests_data) == len(my_items):
             self.add_to_cart(requests_data)
+
+
+    def utc_to_est(self):
+        from datetime import datetime
+        return datetime.now()
