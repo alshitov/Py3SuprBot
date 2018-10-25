@@ -6,7 +6,6 @@ from re import search, findall
 from re import split as re_s
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from seleniumrequests import Chrome
 
 
 class BotWindow(QDialog):
@@ -107,6 +106,10 @@ class BotWindow(QDialog):
 
 class Bot:
     def __init__(self, current_user):
+
+        from selenium import webdriver
+        from seleniumrequests import Chrome
+
         self.current_user = current_user
         self.headers = {
             "Authority": "www.supremenewyork.com",
@@ -121,7 +124,8 @@ class Bot:
             "User-Agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)"
         }
 
-        chrome_options = Chrome.Options()
+
+        chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless")
         self.browser = Chrome(os.path.dirname(os.path.realpath(__file__)) + '/chromedriver',
                               chrome_options=chrome_options)
@@ -422,8 +426,7 @@ class Bot:
         for element in my_items:
 
             item_found = False
-            while not item_found:
-                print(self.utc_to_est(), '-----> Refreshing stock.')
+            while item_found == False:
                 # вещи, доступные на сайте
                 stock = self.fetch_stock()
                 element['type'] = 'Tops/Sweaters' if element['type'] == 'tops-sweaters' else element['type'].title()
@@ -439,8 +442,6 @@ class Bot:
                             print(self.utc_to_est(), '-----> Desired item has been sold out.')
                         else:
                             requests_data.append([item['id'], color_and_size['color_id'], color_and_size['size_id'], price])
-
-                time.sleep(1) if not item_found else None
 
         if len(requests_data) == len(my_items):
             self.add_to_cart(requests_data)
