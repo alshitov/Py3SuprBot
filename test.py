@@ -8,7 +8,7 @@ relations = {
     'Overcoat': 'Jackets',
     'Parka': 'Jackets',
     'Peacoat': 'Jackets',
-    'Pullover': 'Jackets',
+    'Pullover': 'Jackets, Tops/Sweaters, Sweatshirts',
     'Suede A-2': 'Jackets',
     'Suit': 'Jackets',
     'Trench': 'Jackets',
@@ -20,10 +20,9 @@ relations = {
 
     # Tops/Sweaters
     'Cardigan': 'Tops/Sweaters',
-    'Crewneck': 'Tops/Sweaters',
     'Henley': 'Tops/Sweaters',
     'Jersey': 'Tops/Sweaters',
-    'L/S Tee': 'Tops/Sweaters',
+    'L/S Tee': 'Tops/Sweaters, T-Shirts',
     'L/S Top': 'Tops/Sweaters',
     'L/S Thermal': 'Tops/Sweaters',
     'L/S Polo': 'Tops/Sweaters',
@@ -32,20 +31,18 @@ relations = {
     'Ringer': 'Tops/Sweaters',
     'Rugby': 'Tops/Sweaters',
     'Sweater': 'Tops/Sweaters',
-    'Sweatshirt': 'Tops/Sweaters',
     'S/S Henley': 'Tops/Sweaters',
     'S/S Polo': 'Tops/Sweaters',
     'S/S Top': 'Tops/Sweaters',
     'Top': 'Tops/Sweaters',
-    'Tee': 'Tops/Sweaters',
     'Waffle Thermal': 'Tops/Sweaters',
     'Warm Up': 'Tops/Sweaters',
 
     # Sweatshirts
-    'Crewneck': 'Sweatshirts', # !
+    'Crewneck': 'Sweatshirts, Tops/Sweaters', # !
     'Hooded Sweatshirt': 'Sweatshirts',
     'Sweat': 'Sweatshirts',
-    'Sweatshirt': 'Sweatshirts', # !
+    'Sweatshirt': 'Sweatshirts, Tops/Sweaters', # !
 
     # Pants
     'Coveralls': 'Pants',
@@ -59,9 +56,8 @@ relations = {
     'Sweatshort': 'Pants',
 
     # T-Shirts
-    'L/S Tee': 'T-Shirts', # !
     'S/S Tee': 'T-Shirts', # !
-    'Tee': 'T-Shirts', # !
+    'Tee': 'T-Shirts, Tops/Sweaters', # !
 
     # Hats
     'Balaclava': 'Hats',
