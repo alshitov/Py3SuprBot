@@ -165,6 +165,7 @@ class Parser():
                     drop_elem['type'] = div.get('class')[3][7:]
                     drop_elem['name'] = img_alt_split[0].strip()
                     drop_elem['description'] = img_alt_split[1].strip()
+
                     if div.select_one('span.label-price') is not None:
                         drop_elem['price'] = div.select_one('span.label-price').text.strip()
                     else:
