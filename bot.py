@@ -247,16 +247,17 @@ class Bot:
 
         print(self.utc_to_est(), '-----> Refreshing browser.')
         self.browser.refresh()
+
         print(self.utc_to_est(), '-----> Checkout request.')
         self.browser.get(url='https://www.supremenewyork.com/checkout')
-        response = self.browser.request('POST', 'https://www.supremenewyork.com/checkout', data=form_data)
+        response_ = self.browser.request('POST', 'https://www.supremenewyork.com/checkout', data=form_data)
         print(self.utc_to_est(), '-----> Done.')
-        print(response.content)
+
+        print(response_.content)
 
 
     def add_to_cart(self, data):
         print(self.utc_to_est(), '-----> Adding to cart.')
-        print('Adding to cart...')
         response = None
         cookies = {}
 
@@ -423,26 +424,41 @@ class Bot:
         my_items = self.get_buy_list()
         requests_data = []
 
-        for element in my_items:
-
-            item_found = False
-            while item_found == False:
-                # вещи, доступные на сайте
-                stock = self.fetch_stock()
+        for element in my_items:  # items_to_buy
+            item_found = False  # flag
+            while not item_found:
+                stock = self.fetch_stock()  # supreme stock
+                # replace 'Tops/Sweaters' with 'Tops/Sweaters'
                 element['type'] = 'Tops/Sweaters' if element['type'] == 'tops-sweaters' else element['type'].title()
+                # iterating through represented items in market
                 for item in stock['products_and_categories'][element['type']]:
+                    # searching for most appropriate item name
                     if item['name'] == element['name']:
-                        print(self.utc_to_est(), '-----> {} found.'.format(element['name']))
-                        item_found = True
-                        price = round(item['price_euro'] / 100)
-                        print(price)
-                        item_info = self.get_item_info(item['id'])
-                        color_and_size = self.choose_size_and_color(element, item_info)
-                        if color_and_size['color_id'] is None or color_and_size['size_id'] is None:
-                            print(self.utc_to_est(), '-----> Desired item has been sold out.')
-                        else:
-                            requests_data.append([item['id'], color_and_size['color_id'], color_and_size['size_id'], price])
+                        # split desired product name into pieces
+                        elem_split = element['name'].split(' ')
 
+                        # comparing intersection length with desired product name split length minus one
+                        # e.g.: user wants to buy 'Supreme/The Killer Trust Tee' but in real its name sounds like 'The Killer Trust Tee'
+                        # the way is to split desired item name: ['Supreme/The', 'Killer', 'Trust', 'Tee'] and
+                        # to split item name represented in shop: ['The', 'Killer', 'Trust', 'Tee']
+                        # By finding the longest intersection of 2 sets, we can be sure we found desired item.
+                        # The longest intersection usually has length of desired product name split length minus one or more
+
+                        if len(list(set(elem_split) & set(item['name'].split(' ')))) >= (len(elem_split) - 1):
+                            # item successfully found
+                            print(self.utc_to_est(), '-----> {} found.'.format(element['name']))
+                            item_found = True
+                            # collecting info
+                            price = round(item['price_euro'] / 100)
+                            item_info = self.get_item_info(item['id'])
+                            color_and_size = self.choose_size_and_color(element, item_info)
+                            # if size and color info successfully found, add data to request data
+                            if color_and_size['color_id'] is None or color_and_size['size_id'] is None:
+                                print(self.utc_to_est(), '-----> Desired item has been sold out.')
+                            else:
+                                requests_data.append(
+                                    [item['id'], color_and_size['color_id'], color_and_size['size_id'], price])
+        # when all desired items data collected, add them to cart
         if len(requests_data) == len(my_items):
             self.add_to_cart(requests_data)
 
