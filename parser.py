@@ -5,6 +5,8 @@ from random import choice
 import json
 import resize
 
+from relations import *
+
 
 class Parser():
     def __init__(self):
@@ -166,6 +168,12 @@ class Parser():
                     drop_elem['name'] = img_alt_split[0].strip()
                     drop_elem['description'] = img_alt_split[1].strip()
 
+                    if drop_elem['type'] == '':
+                        for piece in relations:
+                            if piece in drop_elem['name']:
+                                drop_elem['type'] = relations[piece]
+                                break
+
                     if div.select_one('span.label-price') is not None:
                         drop_elem['price'] = div.select_one('span.label-price').text.strip()
                     else:
@@ -211,7 +219,6 @@ class Parser():
                     print("Success!")
             except requests.exceptions.ConnectionError:
                 print('Proxy is down... Trying next...')
-                continue
-
+                self.download_images()
         # when images downloaded, resize them and save copies
         resize.resize_images()
