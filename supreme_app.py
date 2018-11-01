@@ -22,14 +22,6 @@ class SupremeApp(QWidget):
         vertbox = QVBoxLayout()
 
         #             buttons               #
-        self.change_droplist = QComboBox()
-        self.change_droplist.addItems(['16th August 18', '20th August 18', '30th August 18',
-                                       '6th September 18', '13th September 18', '20th September 18',
-                                       '27th September 18', '4th October 18', '11th October 18',
-                                       '18th October 18'])
-        self.change_droplist.setObjectName('droplists_box')
-        self.change_droplist.setFixedSize(200, 30)
-
         self.update_button = QPushButton('Check for updates')
         self.update_button.setFixedSize(200, 30)
         self.update_button.setProperty('class', 'custom_button')
@@ -94,7 +86,6 @@ class SupremeApp(QWidget):
         self.items_field.show()
 
         vertbox.addWidget(self.update_button)
-        vertbox.addWidget(self.change_droplist)
         vertbox.addWidget(self.items_field)
         vertbox.addLayout(horizbox)
 
@@ -189,6 +180,3 @@ class SupremeApp(QWidget):
         self.connect(button,
                      SIGNAL('clicked()'),
                      lambda: self.create_item_modal_window(self.drop[index]))
-
-    def refresh_droplists(self):
-        pass

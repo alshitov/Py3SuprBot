@@ -218,7 +218,6 @@ class Configuration(QDialog):
         self.settings_window.exec_()
 
     def connect_buttons(self):
-
         self.connect(self.exit_button,
                      SIGNAL('clicked()'),
                      lambda: self.settings_window.close())
