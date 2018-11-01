@@ -93,10 +93,12 @@ class BotWindow(QDialog):
         from datetime import datetime
         drop_time = self.choose_time_label.text()
         time_now = datetime.now().strftime('%I:%M %p')
+        time_now = time_now[1:] if time_now[0] == '0' else time_now
 
         while str(time_now) != str(drop_time):
-            print('Drop time:', drop_time, '. Time now:', time_now)
+            print('Drop time: {}. Time now: {}'.format(drop_time, time_now))
             time_now = datetime.now().strftime('%I:%M %p')
+            time_now = time_now[1:] if time_now[0] == '0' else time_now
             time.sleep(0.5)
         else:
             current_user = 'user_' + self.choose_user_combobox.currentText() + '.json'
