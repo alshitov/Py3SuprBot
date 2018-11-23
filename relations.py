@@ -56,7 +56,7 @@ relations = {
     'Sweatshort': 'Pants',
 
     # T-Shirts
-    'S/S Tee': 'T-Shirts', # !
+    'S/S Tee': 'Shirts', # !
     'Tee': 'T-Shirts, Tops/Sweaters', # !
 
     # Hats

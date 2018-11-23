@@ -53,7 +53,6 @@ class BotWindow(QDialog):
         self.bot_window.setModal(True)
         self.bot_window.exec_()
 
-
     def connect_buttons(self):
         self.connect(self.cancel_button,
                      SIGNAL('clicked()'),
@@ -62,7 +61,6 @@ class BotWindow(QDialog):
         self.connect(self.process_button,
                      SIGNAL('clicked()'),
                      lambda: self.process_payment())
-
 
     def load_buy_list(self):
         with open("json/items_to_buy.json", mode='r', encoding='utf-8') as fout:
@@ -81,28 +79,37 @@ class BotWindow(QDialog):
 
             self.check_items_label.setText(text)
 
-
     def load_users_list(self):
         files = os.listdir(self.scriptDir + '/json/')
-        users = [file[5:-5]
-                 for file in files if search('user_(.*?).json', file)]
+        users = [
+            file[5:-5]
+                 for file in files if search('user_(.*?).json', file)
+        ]
         self.choose_user_combobox.addItems(users)
 
-
     def process_payment(self):
+        # collecting user payment info
+        current_user = 'user_' + self.choose_user_combobox.currentText() + '.json'
+
+        # creating Bot class instance and opening webdriver
+        bot_ = Bot(current_user)
         from datetime import datetime
+
         drop_time = self.choose_time_label.text()
         time_now = datetime.now().strftime('%I:%M %p')
-        time_now = time_now[1:] if time_now[0] == '0' else time_now
+
+        # pyqt time label removes '0' from the beginning of the string, so we have to do the same
+        time_now = time_now[1:] if time_now.startswith('0') else time_now
 
         while str(time_now) != str(drop_time):
-            print('Drop time: {}. Time now: {}'.format(drop_time, time_now))
+            # refreshing current time
             time_now = datetime.now().strftime('%I:%M %p')
             time_now = time_now[1:] if time_now[0] == '0' else time_now
+
+            # sleep and try again
             time.sleep(0.5)
         else:
-            current_user = 'user_' + self.choose_user_combobox.currentText() + '.json'
-            bot_ = Bot(current_user)
+            # times match: processing
             bot_.find_items()
 
 
@@ -126,12 +133,12 @@ class Bot:
             "User-Agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)"
         }
 
-
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless")
-        self.browser = Chrome(os.path.dirname(os.path.realpath(__file__)) + '/chromedriver',
-                              chrome_options=chrome_options)
-
+        self.browser = Chrome(
+            os.path.dirname(os.path.realpath(__file__)) + '/chromedriver',
+            chrome_options=chrome_options
+        )
 
     # получаем информацию о пользователе из файла
     @staticmethod
@@ -140,27 +147,32 @@ class Bot:
             user = json.load(fout)
         return user
 
-
     # получаем список вещей на покупку из файла
     @staticmethod
     def get_buy_list():
         with open('json/items_to_buy.json', mode='r') as fout:
             return json.load(fout)
 
-
     # получаем список всех вещей, находящихся на данный момент в продаже
     def fetch_stock(self):
-        print(self.utc_to_est(), '-----> Fetching stock.')
-        return requests.request('GET', 'http://www.supremenewyork.com/mobile_stock.json', headers=self.headers).json()
-
+        # print(self.utc_to_est(), '-----> Fetching stock.')
+        return requests.request(
+            method='GET',
+            url='http://www.supremenewyork.com/mobile_stock.json',
+            headers=self.headers
+        ).json()
 
     def get_item_info(self, id):
         print(self.utc_to_est(), '-----> Getting item info.')
-        return requests.request('GET', 'http://www.supremenewyork.com/shop/{}.json'.format(id), headers=self.headers).json()
-
+        return requests.request(
+            method='GET',
+            url='http://www.supremenewyork.com/shop/{}.json'.format(id),
+            headers=self.headers
+        ).json()
 
     def pure_cart_generator(self, data):
         print(self.utc_to_est(), '-----> Generating cart.')
+
         sizes = ''
         total = 0
         sizes_colors = ''
@@ -177,8 +189,10 @@ class Bot:
             cookie = '"cookie":"{}+items--{}"'.format(count, sizes_colors[:-1])
 
         from urllib.request import quote
-        return quote('{' + sizes + cookie + ',"total":"€{}"'.format(total) + '}', safe='')
-
+        return quote(
+            '{' + sizes + cookie + ',"total":"€{}"'.format(total) + '}',
+            safe=''
+        )
 
     def checkout(self, response, data):
         print(self.utc_to_est(), '-----> Checkout.')
@@ -198,22 +212,33 @@ class Bot:
 
         url = 'https://www.supremenewyork.com/checkout'
 
-        headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                   'Accept-Encoding': 'gzip, deflate, sdch, br',
-                   'Accept-Language': 'en-US,en;q=0.8',
-                   'Connection': 'keep-alive',
-                   'Cookie': 'pure_cart={};'.format(pure_cart) + 'cart={};'.format(cart) + '_supreme_sess={};'.format(
-                       sess),
-                   'Host': 'www.supremenewyork.com',
-                   'If-None-Match': 'W/"7cd6c2d3c1278e6ec2f8f895e92dc2dd"',
-                   'Referer': 'https:/www.supremenewyork.com/checkout',
-                   'Upgrade-Insecure-Requests': '1',
-                   'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87'
-                   }
+        headers = {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, sdch, br',
+            'Accept-Language': 'en-US,en;q=0.8',
+            'Connection': 'keep-alive',
+            'Cookie': 'pure_cart={0};cart={1};_supreme_sess={2};'.format(
+                pure_cart,
+                cart,
+                sess
+            ),
+            'Host': 'www.supremenewyork.com',
+            'If-None-Match': 'W/"7cd6c2d3c1278e6ec2f8f895e92dc2dd"',
+            'Referer': 'https:/www.supremenewyork.com/checkout',
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87'
+        }
 
-        auth_r = requests.post(url=url, headers=headers, timeout=2)
+        auth_r = requests.post(
+            url=url,
+            headers=headers,
+            timeout=2
+        )
 
-        x_csrf_token = findall('<meta name="csrf-token" content="(.*==)" />', auth_r.text)[0]
+        x_csrf_token = findall(
+            '<meta name="csrf-token" content="(.*==)" />',
+            auth_r.text
+        )[0]
         print(self.utc_to_est(), '-----> Done.')
 
         user = self.get_user_billing_info(self.current_user)
@@ -245,18 +270,26 @@ class Bot:
         self.browser.delete_all_cookies()
 
         for key, value in requests.utils.dict_from_cookiejar(response.cookies).items():
-            self.browser.add_cookie({'name': key, 'value': value})
+            self.browser.add_cookie(
+                {
+                    'name': key,
+                    'value': value
+                }
+            )
 
         print(self.utc_to_est(), '-----> Refreshing browser.')
         self.browser.refresh()
 
         print(self.utc_to_est(), '-----> Checkout request.')
         self.browser.get(url='https://www.supremenewyork.com/checkout')
-        response_ = self.browser.request('POST', 'https://www.supremenewyork.com/checkout', data=form_data)
+        response_ = self.browser.request(
+            method='POST',
+            url='https://www.supremenewyork.com/checkout',
+            data=form_data
+        )
         print(self.utc_to_est(), '-----> Done.')
 
         print(response_.content)
-
 
     def add_to_cart(self, data):
         print(self.utc_to_est(), '-----> Adding to cart.')
@@ -302,11 +335,10 @@ class Bot:
 
         self.checkout(response, data)
 
-
     def choose_size_and_color(self, element, item_info):
         print(self.utc_to_est(), '-----> Choosing color and size.')
         # Приоритетные цвета, если цвет не задан или задан любой цвет
-        priority_colors = ['Black', 'Green']
+        priority_colors = ['Black', 'White', 'Green']
 
         # Представленные в магазине цвета по данной вещи
         represented_colors = item_info['styles']
@@ -421,50 +453,75 @@ class Bot:
         print(self.utc_to_est(), '-----> Not found.')
         return {'color_id': None, 'size_id': None}
 
-
     def find_items(self):
+        print(self.utc_to_est(), '-----> Started processing.')
         my_items = self.get_buy_list()
         requests_data = []
 
         for element in my_items:  # items_to_buy
             item_found = False  # flag
+
             while not item_found:
                 stock = self.fetch_stock()  # supreme stock
+
                 # replace 'Tops/Sweaters' with 'Tops/Sweaters'
-                element['type'] = 'Tops/Sweaters' if element['type'] == 'tops-sweaters' else element['type'].title()
+                if element['type'] == 'tops-sweaters':
+                    element['type'] = 'Tops/Sweaters'
+
+                elif element['type'] == 't-shirts':
+                    element['type'] = 'Shirts'
+
+                else:
+                    element['type'] = element['type'].title()
+
                 # iterating through represented items in market
                 for item in stock['products_and_categories'][element['type']]:
+
                     # searching for most appropriate item name
                     if item['name'] == element['name']:
-                        # split desired product name into pieces
+
+                        '''
+                        split desired product name into pieces
                         elem_split = element['name'].split(' ')
 
-                        # comparing intersection length with desired product name split length minus one
-                        # e.g.: user wants to buy 'Supreme/The Killer Trust Tee' but in real its name sounds like 'The Killer Trust Tee'
-                        # the way is to split desired item name: ['Supreme/The', 'Killer', 'Trust', 'Tee'] and
-                        # to split item name represented in shop: ['The', 'Killer', 'Trust', 'Tee']
-                        # By finding the longest intersection of 2 sets, we can be sure we found desired item.
-                        # The longest intersection usually has length of desired product name split length minus one or more
+                        comparing intersection length with desired product name split length minus one
+                        e.g.: user wants to buy 'Supreme/The Killer Trust Tee' 
+                        but in real its name sounds like 'The Killer Trust Tee'
+                        the way is to split desired item name: ['Supreme/The', 'Killer', 'Trust', 'Tee'] and
+                        to split item name represented in shop: ['The', 'Killer', 'Trust', 'Tee']
+                        By finding the longest intersection of 2 sets, we can be sure we found desired item.
+                        The longest intersection usually has length of desired product name split length minus one
 
                         if len(list(set(elem_split) & set(item['name'].split(' ')))) >= (len(elem_split) - 1):
-                            # item successfully found
-                            print(self.utc_to_est(), '-----> {} found.'.format(element['name']))
-                            item_found = True
-                            # collecting info
-                            price = round(item['price_euro'] / 100)
-                            item_info = self.get_item_info(item['id'])
-                            color_and_size = self.choose_size_and_color(element, item_info)
-                            # if size and color info successfully found, add data to request data
-                            if color_and_size['color_id'] is None or color_and_size['size_id'] is None:
-                                print(self.utc_to_est(), '-----> Desired item has been sold out.')
-                            else:
-                                requests_data.append(
-                                    [item['id'], color_and_size['color_id'], color_and_size['size_id'], price])
+                        '''
+
+                        # item found
+                        print(self.utc_to_est(), '-----> {} found.'.format(element['name']))
+                        item_found = True
+
+                        # collecting info
+                        price = round(item['price_euro'] / 100)
+                        item_info = self.get_item_info(item['id'])
+                        color_and_size = self.choose_size_and_color(element, item_info)
+
+                        # if size and color info successfully found, add data to request data
+                        if color_and_size['color_id'] is None or color_and_size['size_id'] is None:
+                            print(self.utc_to_est(), '-----> Desired item has been sold out.')
+                        else:
+                            requests_data.append(
+                                [
+                                    item['id'],
+                                    color_and_size['color_id'],
+                                    color_and_size['size_id'],
+                                    price
+                                ]
+                            )
+
         # when all desired items data collected, add them to cart
         if len(requests_data) == len(my_items):
             self.add_to_cart(requests_data)
 
-
-    def utc_to_est(self):
+    @staticmethod
+    def utc_to_est():
         from datetime import datetime
         return datetime.now()
