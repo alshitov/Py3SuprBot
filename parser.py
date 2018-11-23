@@ -12,11 +12,13 @@ class Parser():
     def __init__(self):
         self.scriptDir = os.path.dirname(os.path.realpath(__file__))
 
-
     def get_html(self, url, headers=None, proxies=None):
-        request = requests.get(url, headers=headers, proxies=proxies)
+        request = requests.get(
+            url=url,
+            headers=headers,
+            proxies=proxies
+        )
         return request.text
-
 
     def parse_http_proxies(self):
         url = 'https://www.free-proxy-list.net/'
@@ -37,7 +39,6 @@ class Parser():
         with open('txt/http_proxies.txt', mode='w', encoding='utf-8') as fin:
             fin.write('\n'.join(self.http_proxies))
 
-
     def parse_ssl_https_proxies(self):
         url = 'https://www.sslproxies.org/'
         html = self.get_html(url)
@@ -56,7 +57,6 @@ class Parser():
 
         with open('txt/https_proxies.txt', mode='w', encoding='utf-8') as fin:
             fin.write('\n'.join(self.https_proxies))
-
 
     def parse_sizing_tables(self):
         url = 'https://supremenewyork.com/shop/sizing'
@@ -91,7 +91,6 @@ class Parser():
         current_title = article.find('h2').text
 
         return [self.objects, current_title]
-
 
     def parse_main_window_content(self):
         # first, refreshing proxy lists
