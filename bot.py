@@ -93,6 +93,7 @@ class BotWindow(QDialog):
 
         # creating Bot class instance and opening webdriver
         bot_ = Bot(current_user)
+
         from datetime import datetime
 
         drop_time = self.choose_time_label.text()
@@ -461,40 +462,37 @@ class Bot:
         for element in my_items:  # items_to_buy
             item_found = False  # flag
 
+            # split desired product name into pieces
+            elem_split = element['name'].split(' ')
+
             while not item_found:
                 stock = self.fetch_stock()  # supreme stock
 
                 # replace 'Tops/Sweaters' with 'Tops/Sweaters'
-                if element['type'] == 'tops-sweaters':
-                    element['type'] = 'Tops/Sweaters'
-
-                elif element['type'] == 't-shirts':
-                    element['type'] = 'Shirts'
-
-                else:
-                    element['type'] = element['type'].title()
+                # if element['type'] == 'tops-sweaters':
+                #     element['type'] = 'Tops/Sweaters'
+                #
+                # elif element['type'] == 't-shirts':
+                #     element['type'] = 'Shirts'
+                #
+                # else:
+                #     element['type'] = element['type'].title()
 
                 # iterating through represented items in market
                 for item in stock['products_and_categories'][element['type']]:
 
                     # searching for most appropriate item name
-                    if item['name'] == element['name']:
+                    '''
+                    comparing intersection length with desired product name split length minus one
+                    e.g.: user wants to buy 'Supreme/The Killer Trust Tee' 
+                    but in real its name sounds like 'The Killer Trust Tee'
+                    the way is to split desired item name: ['Supreme/The', 'Killer', 'Trust', 'Tee'] and
+                    to split item name represented in shop: ['The', 'Killer', 'Trust', 'Tee']
+                    By finding the longest intersection of 2 sets, we can be sure we found desired item.
+                    The longest intersection usually has length of desired product name split length minus one
+                    '''
 
-                        '''
-                        split desired product name into pieces
-                        elem_split = element['name'].split(' ')
-
-                        comparing intersection length with desired product name split length minus one
-                        e.g.: user wants to buy 'Supreme/The Killer Trust Tee' 
-                        but in real its name sounds like 'The Killer Trust Tee'
-                        the way is to split desired item name: ['Supreme/The', 'Killer', 'Trust', 'Tee'] and
-                        to split item name represented in shop: ['The', 'Killer', 'Trust', 'Tee']
-                        By finding the longest intersection of 2 sets, we can be sure we found desired item.
-                        The longest intersection usually has length of desired product name split length minus one
-
-                        if len(list(set(elem_split) & set(item['name'].split(' ')))) >= (len(elem_split) - 1):
-                        '''
-
+                    if len(list(set(elem_split) & set(item['name'].split(' ')))) >= (len(elem_split) - 1):
                         # item found
                         print(self.utc_to_est(), '-----> {} found.'.format(element['name']))
                         item_found = True
